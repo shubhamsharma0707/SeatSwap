@@ -1,0 +1,16 @@
+{
+  "name": "seatswap",
+  "version": "1.0.0",
+  "description": "SeatSwap™ — Micro-Leasing Marketplace for SaaS Team Plan Seats (Figma, Adobe, LeetCode, Midjourney)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "node test_suite.js && node test_landing.js",
+    "test:landing": "node test_landing.js",
+    "test:dashboard": "node test_suite.js"
+  },
+  "keywords": ["seatswap", "saas-marketplace", "micro-leasing", "team-seats", "escrow-protocol", "threejs-3d-seat"],
+  "author": "",
+  "license": "ISC"
+}

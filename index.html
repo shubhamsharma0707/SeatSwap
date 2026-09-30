@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SeatSwap™ — Micro-Leasing Marketplace for SaaS Team Seats</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Custom Properties ─────────────────────────────────────────────────── */
+    :root {
+      --fg:      #0d0c0b;
+      --fg-soft: rgba(13,12,11,.64);
+      --fg-faint:rgba(13,12,11,.42);
+      --shade:   #f2f0ec;
+      --rule:    rgba(13,12,11,.16);
+      --ease:    cubic-bezier(.22,.61,.36,1);
+      --pill-bg: #0a0908;
+      --pill-fg: #ffffff;
+    }
+
+    /* ─── Reset ─────────────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      background: var(--shade);
+      color: var(--fg);
+      font-family: 'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    /* ─── Preloader ─────────────────────────────────────────────────────────── */
+    .boot {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: var(--shade);
+      transition: opacity .7s var(--ease), visibility .7s;
+    }
+    .boot.done { opacity: 0; visibility: hidden; }
+    .boot p    { font-size: 12.5px; letter-spacing: .05em; color: var(--fg-faint); }
+
+    .bar { width: 150px; height: 1px; background: var(--rule); overflow: hidden; }
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 100%;
+      background: var(--fg);
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+    }
+
+    /* ─── Fixed Background Video Stage ─────────────────────────────────────── */
+    .stage {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: var(--shade);
+    }
+
+    .stage video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%,-50%) scale(1.02);
+      object-fit: cover;
+      filter: contrast(1.02);
+      will-change: transform;
+    }
+
+    /* Three-layer veil — footage is high-key white so this is a deliberately
+       light wash, heavier at top/bottom edges where nav and footer sit */
+    .veil {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(to bottom, rgba(242,240,236,.62) 0%, rgba(242,240,236,.12) 22%, rgba(242,240,236,.12) 78%, rgba(242,240,236,.66) 100%),
+        radial-gradient(100% 80% at 50% 48%, rgba(242,240,236,0) 0%, rgba(242,240,236,.34) 100%),
+        rgba(242,240,236,.20);
+    }
+
+    /* Fine SVG turbulence noise so the flat wash doesn't band */
+    .grain {
+      position: absolute;
+      inset: -50%;
+      opacity: .13;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.5'/></svg>");
+    }
+
+    /* ─── Scroll Progress Hairline ──────────────────────────────────────────── */
+    .meter {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 50;
+      height: 2px;
+      width: 100%;
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      background: var(--fg);
+      opacity: .55;
+    }
+
+    /* ─── Navigation Chrome ─────────────────────────────────────────────────── */
+    .chrome {
+      position: fixed;
+      left: 0; right: 0; top: 0;
+      z-index: 40;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: max(14px, calc(env(safe-area-inset-top, 0px) + 12px)) clamp(16px, 3.4vw, 44px) 14px;
+      background: linear-gradient(to bottom, rgba(242,240,236,.94) 0%, rgba(242,240,236,.78) 72%, rgba(242,240,236,0) 100%);
+    }
+
+    .mark {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 15px;
+      letter-spacing: -.012em;
+      color: var(--fg);
+      min-width: 0;
+      flex-shrink: 1;
+    }
+    .mark-star { opacity: .85; }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(14px, 2.4vw, 32px);
+      flex-shrink: 0;
+    }
+    .nav a:not(.pill) {
+      color: var(--fg);
+      text-decoration: none;
+      font-size: 14.5px;
+      letter-spacing: -.008em;
+      opacity: .88;
+      transition: opacity .3s var(--ease);
+    }
+    .nav a:not(.pill):hover { opacity: 1; }
+
+    /* Currency Toggle */
+    .currency-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: rgba(13,12,11,.06);
+      border-radius: 999px;
+      padding: 3px;
+      border: 1px solid var(--rule);
+    }
+    .currency-toggle button {
+      background: none;
+      border: none;
+      color: var(--fg-soft);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -.008em;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all .25s var(--ease);
+      font-family: inherit;
+    }
+    .currency-toggle button.active {
+      background: var(--fg);
+      color: var(--shade);
+      box-shadow: 0 1px 3px rgba(13,12,11,.12);
+    }
+    .currency-toggle button:hover:not(.active) {
+      color: var(--fg);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 40px;
+      padding: 0 21px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      color: var(--pill-fg);
+      font-size: 14.5px;
+      font-weight: 500;
+      letter-spacing: -.008em;
+      text-decoration: none;
+      white-space: nowrap;
+      opacity: 1;
+      border: 1px solid rgba(10,9,8,.12);
+      box-shadow: 0 1px 0 rgba(255,255,255,.10) inset;
+      -webkit-text-fill-color: var(--pill-fg);
+      transition: transform .4s var(--ease), background .3s var(--ease), color .3s var(--ease);
+    }
+    /* Required so the nav's inherited link colour never bleeds into
+       the dark pill on mobile Safari */
+    .nav .pill { color: #fff; -webkit-text-fill-color: #fff; }
+
+    .pill:hover,
+    .pill:focus-visible {
+      transform: translateY(-2px);
+      background: #000;
+      color: #fff;
+      -webkit-text-fill-color: #fff;
+    }
+    .pill:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+    /* ─── Footer ────────────────────────────────────────────────────────────── */
+    .foot {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 40;
+      display: flex;
+      justify-content: center;
+      padding: 14px clamp(16px, 4vw, 24px) max(16px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+      font-size: 12px;
+      line-height: 1.45;
+      letter-spacing: .02em;
+      color: var(--fg-faint);
+      text-align: center;
+      pointer-events: none;
+      background: linear-gradient(to top, rgba(242,240,236,.92) 0%, rgba(242,240,236,.72) 72%, rgba(242,240,236,0) 100%);
+    }
+
+    /* ─── Panel Layer ───────────────────────────────────────────────────────── */
+    .panels { position: fixed; inset: 0; z-index: 20; pointer-events: none; }
+
+    .panel {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding:
+        max(104px, calc(env(safe-area-inset-top, 0px) + 88px))
+        clamp(20px, 5vw, 60px)
+        max(96px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      font-size: 12.5px;
+      letter-spacing: .045em;
+      color: var(--fg-soft);
+      margin-bottom: clamp(16px, 2vw, 22px);
+      max-width: min(46ch, 100%);
+      text-align: center;
+    }
+
+    h1 {
+      font-weight: 400;
+      font-size: clamp(34px, 7.1vw, 104px);
+      line-height: .98;
+      letter-spacing: -.036em;
+      max-width: 15ch;
+      text-wrap: balance;
+    }
+
+    .sub {
+      margin-top: clamp(18px, 2.2vw, 28px);
+      font-size: clamp(15px, 1.28vw, 19px);
+      line-height: 1.5;
+      letter-spacing: -.008em;
+      color: var(--fg-soft);
+      max-width: min(46ch, 100%);
+      text-wrap: pretty;
+    }
+
+    .cta {
+      margin-top: clamp(28px, 3.4vw, 44px);
+      pointer-events: auto;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+    .cta .pill { height: 48px; padding: 0 27px; font-size: 15px; max-width: min(100%, 320px); }
+
+    /* ─── Scroll Track (sole source of page height) ─────────────────────────── */
+    .track { position: relative; z-index: 1; height: 560vh; min-height: 3200px; }
+
+    /* ─── Responsive Breakpoints (in this order) ────────────────────────────── */
+
+    /* Strengthen veil on smaller/brighter screens */
+    @media (max-width: 900px) {
+      .veil {
+        background:
+          linear-gradient(to bottom, rgba(242,240,236,.72) 0%, rgba(242,240,236,.18) 24%, rgba(242,240,236,.18) 76%, rgba(242,240,236,.74) 100%),
+          radial-gradient(100% 80% at 50% 48%, rgba(242,240,236,0) 0%, rgba(242,240,236,.40) 100%),
+          rgba(242,240,236,.24);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .nav a:not(.pill) { display: none; }
+      .mark             { font-size: 14px; }
+      .nav .pill        { height: 38px; padding: 0 16px; font-size: 13.5px; }
+      h1                { max-width: 12ch; font-size: clamp(30px, 9.8vw, 52px); }
+      .sub              { font-size: 15px; max-width: 34ch; }
+      .panel {
+        padding:
+          max(92px, calc(env(safe-area-inset-top, 0px) + 76px))
+          18px
+          max(88px, calc(env(safe-area-inset-bottom, 0px) + 72px));
+      }
+      .foot { font-size: 11px; max-width: 34ch; }
+    }
+
+    @media (max-width: 420px) {
+      .mark-star { display: none; }
+      .nav .pill { height: 36px; padding: 0 14px; font-size: 13px; }
+      h1         { max-width: 11ch; font-size: clamp(28px, 10.5vw, 40px); }
+      .eyebrow   { font-size: 11px; letter-spacing: .04em; max-width: 28ch; }
+      .cta .pill { width: 100%; max-width: 280px; height: 44px; padding: 0 20px; font-size: 14px; }
+    }
+
+    @media (max-height: 520px) and (orientation: landscape) {
+      .panel {
+        padding:
+          max(72px, calc(env(safe-area-inset-top, 0px) + 56px))
+          24px
+          max(64px, calc(env(safe-area-inset-bottom, 0px) + 48px));
+      }
+      h1   { font-size: clamp(28px, 8vh, 44px); }
+      .sub { margin-top: 12px; font-size: 14px; }
+      .cta { margin-top: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Preloader -->
+  <div class="boot" id="boot">
+    <div class="bar"><i id="bootBar"></i></div>
+    <p id="bootPct">LOADING 0%</p>
+  </div>
+
+  <!-- Fixed full-screen video stage; JS sets .src so no premature request -->
+  <div class="stage">
+    <video id="clip" muted playsinline preload="auto" disablepictureinpicture></video>
+    <div class="veil"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- Scroll progress hairline -->
+  <i class="meter" id="meter"></i>
+
+  <!-- Navigation chrome -->
+  <header class="chrome">
+    <div class="mark">
+      <span class="mark-star" aria-hidden="true">&#10037;</span>&nbsp;SeatSwap™
+    </div>
+    <nav class="nav">
+      <a href="#how">How it works</a>
+      <a href="#tools">Tools</a>
+      <div class="currency-toggle">
+        <button id="currencyUSD" class="active">USD</button>
+        <button id="currencyINR">INR</button>
+      </div>
+      <a href="dashboard.html" class="pill">Browse seats</a>
+    </nav>
+  </header>
+
+  <!-- Three cross-fading panels — opacity/transform driven entirely from rAF -->
+  <main class="panels">
+
+    <!-- Panel 1 -->
+    <section class="panel" data-panel>
+      <p class="eyebrow">Micro-leasing marketplace <span>&middot;</span> Figma, Adobe, LeetCode, Midjourney</p>
+      <h1>Team seats.<br />Individual prices.</h1>
+      <p class="sub">Lease idle SaaS team plan seats for <span class="price" data-usd="$3–$15" data-inr="₹250–₹1,250">$3–$15</span>/month. Save 60–75% over individual licenses with zero-credential escrow protection.</p>
+      <div class="cta">
+        <a class="pill" href="dashboard.html">Browse available seats</a>
+      </div>
+    </section>
+
+    <!-- Panel 2 -->
+    <section class="panel" data-panel>
+      <p class="eyebrow">Zero-knowledge security</p>
+      <h1>Your seat.<br />Not their password.</h1>
+      <p class="sub">Access via automated workspace invites or OAuth proxy tokens. Hosts never share credentials. Buyers never see billing details.</p>
+      <div class="cta">
+        <a class="pill" href="#how">Learn how it works</a>
+      </div>
+    </section>
+
+    <!-- Panel 3 -->
+    <section class="panel" data-panel>
+      <p class="eyebrow">Smart escrow protection</p>
+      <h1>30-day guarantee.<br />Instant refunds.</h1>
+      <p class="sub">Automated health probes every 12 hours. If a host revokes access early, you receive an immediate prorated refund. No disputes, no delays.</p>
+      <div class="cta">
+        <a class="pill" href="dashboard.html">Start leasing</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Fixed footer -->
+  <footer class="foot">Micro-leasing marketplace for SaaS team plan seats &nbsp;&middot;&nbsp; 15% platform fee, 30-day escrow guarantee</footer>
+
+  <!-- Scroll track — the ONLY element that gives the page its height -->
+  <div class="track"></div>
+
+  <script>
+  (function(){ "use strict";
+
+    /*
+     * VIDEO — 1920×1080, 10.04 s, 241 frames, all-intra H.264 MP4.
+     * Every frame is a keyframe, so seeking to any timestamp is instant —
+     * no keyframe-hunting lag.
+     */
+    var VIDEO_URL = "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/45567745-d826-44a2-a5ce-7ef670944e60.mp4";
+
+    /* ── DOM refs ────────────────────────────────────────────────────────────── */
+    var clip    = document.getElementById("clip");
+    var boot    = document.getElementById("boot");
+    var bootBar = document.getElementById("bootBar");
+    var bootPct = document.getElementById("bootPct");
+    var meter   = document.getElementById("meter");
+    var panels  = [].slice.call(document.querySelectorAll("[data-panel]"));
+
+    /*
+     * Cue table — each entry is [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd]
+     * expressed as 0..1 fractions of total page scroll.
+     *
+     * Gaps between one panel's fadeOutEnd and the next's fadeInStart are
+     * deliberate dead zones where only the video plays — this guarantees
+     * two panels are never simultaneously readable.
+     *
+     *   Panel 1: 0.00 → 0.23   │ dead zone 0.23 → 0.35
+     *   Panel 2: 0.35 → 0.65   │ dead zone 0.65 → 0.77
+     *   Panel 3: 0.77 → 1.20+  │ (extends past 1.0 so it stays up at bottom)
+     */
+    var CUES = [
+      [0.00, 0.00, 0.15, 0.23],
+      [0.35, 0.43, 0.57, 0.65],
+      [0.77, 0.85, 1.10, 1.20]
+    ];
+    var DRIFT = 22; // px of counter-scroll travel per panel
+
+    /* ── Helpers ─────────────────────────────────────────────────────────────── */
+    function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+    function smooth(t) { return t * t * (3 - 2 * t); } // smoothstep
+    function ramp(p, a, b) {
+      if (b <= a) return p >= b ? 1 : 0;
+      return smooth(clamp((p - a) / (b - a), 0, 1));
+    }
+
+    /* ── State ───────────────────────────────────────────────────────────────── */
+    var progress = 0;  // 0..1 scroll position
+    var seekTo   = 0;  // target video time (seconds)
+    var seekAt   = 0;  // current eased video time
+    var duration = 0;  // populated once loadedmetadata fires
+    var ready    = false;
+
+    /* ── readScroll ──────────────────────────────────────────────────────────── */
+    function readScroll() {
+      var max = document.documentElement.scrollHeight - window.innerHeight;
+      progress = max > 0 ? clamp(window.pageYOffset / max, 0, 1) : 0;
+      if (duration) seekTo = progress * duration;
+    }
+
+    /* ── paint — every rAF tick ──────────────────────────────────────────────── */
+    function paint() {
+      meter.style.transform = "scaleX(" + progress + ")";
+
+      for (var i = 0; i < panels.length; i++) {
+        var el    = panels[i];
+        var c     = CUES[i];
+        var enter = ramp(progress, c[0], c[1]);
+        var leave = ramp(progress, c[2], c[3]);
+        var o     = enter * (1 - leave);
+        var y     = (1 - enter) * DRIFT - leave * DRIFT;
+        el.style.opacity       = o;
+        el.style.transform     = "translate3d(0," + y + "px,0)";
+        el.style.pointerEvents = o > 0.6 ? "auto" : "none";
+      }
+    }
+
+    /* ── frame — rAF loop, never cancelled ───────────────────────────────────── */
+    function frame() {
+      if (ready && duration) {
+        var gap = seekTo - seekAt;
+        if (Math.abs(gap) > 0.0008) {
+          seekAt += gap * 0.115; // easing factor — do not change
+          if (clip.readyState >= 2 && !clip.seeking) {
+            try { clip.currentTime = seekAt; } catch (e) {}
+          }
+        }
+      }
+      paint();
+      requestAnimationFrame(frame);
+    }
+    /* The easing of currentTime toward the scroll target (rather than snapping)
+       is what turns a jumpy scrub into a smooth one. */
+
+    /* ── Boot / loading ──────────────────────────────────────────────────────── */
+    function setProgress(f) {
+      bootBar.style.transform = "scaleX(" + f + ")";
+      bootPct.textContent = "LOADING " + Math.round(f * 100) + "%";
+    }
+
+    var started = false;
+    function start() {
+      if (started) return;
+      started = true;
+      ready = true;
+      boot.classList.add("done");
+      readScroll();
+      seekAt = seekTo;
+    }
+
+    var attached = false;
+    function attach(src) {
+      if (attached) return;
+      attached = true;
+
+      clip.addEventListener("loadedmetadata", function() {
+        duration = clip.duration || 0;
+        clip.pause();
+        readScroll();
+        seekAt = seekTo;
+        try { clip.currentTime = seekAt; } catch (e) {}
+      });
+      clip.addEventListener("loadeddata",     function() { start(); });
+      clip.addEventListener("canplaythrough", function() { start(); });
+      clip.addEventListener("error",          function() { start(); });
+
+      clip.src = src;
+      clip.load();
+
+      // Safety net: if decode stalls for 12 s, dismiss the preloader anyway
+      setTimeout(start, 12000);
+    }
+
+    /*
+     * preload() — fetch the entire MP4 into a Blob before attaching.
+     *
+     * WHY BLOB vs. RANGE REQUESTS: seeking inside a fully-buffered Blob is
+     * sub-millisecond. Seeking against a live range-request stream forces the
+     * browser to issue a new HTTP range request on every seek, adding 50–300 ms
+     * latency that destroys the frame-by-frame scrub illusion.
+     *
+     * If the fetch fails or stalls past the 15 s bail timer, we fall back to
+     * direct streaming so the page is never permanently broken.
+     */
+    function preload() {
+      var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
+
+      var bail = setTimeout(function() {
+        if (attached) return;
+        if (ctrl) ctrl.abort();
+        setProgress(1);
+        attach(VIDEO_URL);
+      }, 15000);
+
+      fetch(VIDEO_URL, ctrl ? { signal: ctrl.signal } : {})
+        .then(function(res) {
+          if (!res.ok || !res.body) throw new Error("bad response");
+          var total  = parseInt(res.headers.get("content-length") || "0", 10);
+          var got    = 0;
+          var chunks = [];
+          var reader = res.body.getReader();
+
+          function pump() {
+            return reader.read().then(function(r) {
+              if (r.done) {
+                return new Blob(chunks, { type: "video/mp4" });
+              }
+              chunks.push(r.value);
+              got += r.value.byteLength;
+              // 11e6 ≈ approximate byte size when Content-Length header is absent
+              setProgress(total ? got / total : Math.min(got / 11e6, 0.95));
+              return pump();
+            });
+          }
+          return pump();
+        })
+        .then(function(blob) {
+          clearTimeout(bail);
+          setProgress(1);
+          attach(URL.createObjectURL(blob));
+        })
+        .catch(function() {
+          clearTimeout(bail);
+          setProgress(1);
+          attach(VIDEO_URL); // CORS failure, abort, or offline — stream directly
+        });
+    }
+
+    /*
+     * iOS unlock — iOS will not render any video frame from an element that
+     * has never been played. We nudge play() on the first user gesture then
+     * immediately pause, which unlocks frame painting without visible playback.
+     */
+    function unlock() {
+      var p = clip.play();
+      if (p && p.then) p.then(function() { clip.pause(); }).catch(function() {});
+      else clip.pause();
+    }
+    ["touchstart","pointerdown","wheel","keydown"].forEach(function(ev) {
+      window.addEventListener(ev, unlock, { once: true, passive: true });
+    });
+
+    /* ── Currency Toggle ─────────────────────────────────────────────────────── */
+    var USD_TO_INR = 83;
+    var currentCurrency = localStorage.getItem("seatswap_currency") || "USD";
+
+    function setCurrency(currency) {
+      currentCurrency = currency;
+      localStorage.setItem("seatswap_currency", currency);
+
+      // Update toggle buttons
+      var usdBtn = document.getElementById("currencyUSD");
+      var inrBtn = document.getElementById("currencyINR");
+      if (currency === "USD") {
+        usdBtn.classList.add("active");
+        inrBtn.classList.remove("active");
+      } else {
+        inrBtn.classList.add("active");
+        usdBtn.classList.remove("active");
+      }
+
+      // Update all prices
+      var priceElements = document.querySelectorAll(".price");
+      for (var i = 0; i < priceElements.length; i++) {
+        var el = priceElements[i];
+        if (currency === "USD") {
+          el.textContent = el.getAttribute("data-usd");
+        } else {
+          el.textContent = el.getAttribute("data-inr");
+        }
+      }
+    }
+
+    // Initialize currency on load
+    setCurrency(currentCurrency);
+
+    // Bind toggle buttons
+    document.getElementById("currencyUSD").addEventListener("click", function() {
+      setCurrency("USD");
+    });
+    document.getElementById("currencyINR").addEventListener("click", function() {
+      setCurrency("INR");
+    });
+
+    /* ── Wire up (in this order) ─────────────────────────────────────────────── */
+    window.addEventListener("scroll", readScroll, { passive: true });
+    window.addEventListener("resize", readScroll);
+
+    readScroll();
+    paint();
+    preload();
+    requestAnimationFrame(frame);
+
+  })();
+  </script>
+  <!-- Integration Script for Authentication -->
+  <script src="js/integration.js"></script>
+</body>
+</html>

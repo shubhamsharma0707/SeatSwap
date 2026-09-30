@@ -1,0 +1,3030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>SeatSwap™ Dashboard — SaaS Team Seat Micro-Lease &amp; Escrow Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    :root {
+      --shade: #f2f0ec;
+      --shade-card: rgba(255, 255, 255, 0.88);
+      --shade-card-solid: #ffffff;
+      --shade-surface: rgba(242, 240, 236, 0.72);
+      
+      --fg: #0d0c0b;
+      --fg-soft: rgba(13, 12, 11, 0.66);
+      --fg-faint: rgba(13, 12, 11, 0.42);
+      
+      --rule: rgba(13, 12, 11, 0.12);
+      --rule-bold: rgba(13, 12, 11, 0.22);
+      
+      --kinetic-yellow: #ffbe0b;
+      --kinetic-yellow-light: #ffd166;
+      --yellow-glow: rgba(255, 190, 11, 0.28);
+      --yellow-dim: rgba(255, 190, 11, 0.14);
+      
+      --pill-bg: #0a0908;
+      --pill-fg: #ffffff;
+      
+      --status-active: #15803d;
+      --status-active-bg: rgba(34, 197, 94, 0.14);
+      --status-escrow: #b45309;
+      --status-escrow-bg: rgba(245, 158, 11, 0.16);
+      
+      --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+      --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --fluid-container: min(95vw, 1540px);
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--shade);
+      color: var(--fg);
+      font-family: 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Ambient background stage, video, and SVG grain noise overlay matching index.html */
+    .stage {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: var(--shade);
+      pointer-events: none;
+    }
+
+    .stage video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 100%;
+      height: 100%;
+      transform: translate(-50%, -50%) scale(1.02);
+      object-fit: cover;
+      filter: contrast(1.02) brightness(0.98);
+      opacity: 0.65;
+      will-change: transform;
+      transition: opacity 1.2s ease;
+    }
+
+    #ambientCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .veil {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(255, 190, 11, 0.14) 0%, transparent 60%),
+        linear-gradient(to bottom, rgba(242, 240, 236, 0.78) 0%, rgba(242, 240, 236, 0.45) 25%, rgba(242, 240, 236, 0.48) 75%, rgba(242, 240, 236, 0.92) 100%),
+        rgba(242, 240, 236, 0.32);
+    }
+
+    .grain {
+      position: absolute;
+      inset: -50%;
+      opacity: .13;
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.5'/></svg>");
+    }
+
+    /* Top Chrome Header */
+    .chrome {
+      position: sticky;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 50;
+      background: rgba(242, 240, 236, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--rule);
+      padding: max(12px, env(safe-area-inset-top)) clamp(16px, 3.4vw, 44px) 12px;
+    }
+
+    .chrome-inner {
+      max-width: var(--fluid-container);
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--fg);
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--fg);
+      color: var(--kinetic-yellow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      transition: transform 0.25s var(--ease);
+    }
+
+    .brand-wrap:hover .brand-icon {
+      transform: scale(1.08) rotate(-4deg);
+    }
+
+    .brand-title {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+
+    .brand-badge {
+      font-size: 10.5px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--yellow-dim);
+      color: #925800;
+      border: 1px solid rgba(255, 190, 11, 0.35);
+    }
+
+    .nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(13, 12, 11, 0.05);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid var(--rule);
+    }
+
+    .nav-tab-btn {
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--fg-soft);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.25s var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .nav-tab-btn.active, .nav-tab-btn:hover {
+      background: #ffffff;
+      color: var(--fg);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+    }
+
+    .nav-tab-btn.active {
+      font-weight: 600;
+    }
+
+    .chrome-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      height: 38px;
+      padding: 0 18px;
+      border-radius: 999px;
+      background: var(--pill-bg);
+      color: var(--pill-fg);
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: -.01em;
+      text-decoration: none;
+      white-space: nowrap;
+      border: 1px solid rgba(10, 9, 8, .12);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .10) inset;
+      -webkit-text-fill-color: var(--pill-fg);
+      transition: transform .3s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease);
+      cursor: pointer;
+    }
+
+    .pill:hover {
+      transform: translateY(-1.5px);
+      background: #000;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, .14);
+    }
+
+    .pill-yellow {
+      background: var(--kinetic-yellow);
+      color: #0d0c0b;
+      -webkit-text-fill-color: #0d0c0b;
+      font-weight: 600;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 8px var(--yellow-glow);
+    }
+
+    .pill-yellow:hover {
+      background: #ebb000;
+      box-shadow: 0 4px 16px rgba(255, 190, 11, 0.4);
+    }
+
+    .pill-ghost {
+      background: transparent;
+      color: var(--fg-soft);
+      -webkit-text-fill-color: var(--fg-soft);
+      border: 1px solid var(--rule);
+      box-shadow: none;
+    }
+
+    .pill-ghost:hover {
+      background: rgba(255, 255, 255, 0.6);
+      color: var(--fg);
+      -webkit-text-fill-color: var(--fg);
+    }
+
+    /* Main Container */
+    .main-wrap {
+      position: relative;
+      z-index: 10;
+      max-width: var(--fluid-container);
+      margin: 24px auto 80px;
+      padding: 0 clamp(16px, 3.4vw, 44px);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Hero Banner Strip */
+    .hero-banner {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .hero-title-area h1 {
+      font-size: clamp(28px, 4vw, 46px);
+      font-weight: 600;
+      letter-spacing: -.035em;
+      line-height: 1.05;
+    }
+
+    .hero-title-area h1 span {
+      background: linear-gradient(135deg, #0d0c0b 0%, #555048 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-title-area p {
+      margin-top: 8px;
+      color: var(--fg-soft);
+      font-size: clamp(14px, 1.1vw, 16px);
+      max-width: 62ch;
+      line-height: 1.45;
+    }
+
+    .metrics-strip {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .metric-card {
+      background: var(--shade-card);
+      border: 1px solid var(--rule);
+      border-radius: 14px;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+      transition: transform 0.2s;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .metric-card .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--fg-faint);
+      font-weight: 600;
+    }
+
+    .metric-card .val {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      color: var(--fg);
+      margin-top: 2px;
+    }
+
+    .metric-card .val.accent {
+      color: #b45309;
+    }
+
+    /* Master Layout: 3D Stage on Left, Marketplace / Leases on Right */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.12fr 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    @media (max-width: 1120px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Common Card Styles */
+    .glass-card {
+      background: var(--shade-card);
+      border: 1px solid var(--rule);
+      border-radius: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .card-header h2 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -.015em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* 3D Centerpiece Stage */
+    .stage-3d-container {
+      position: relative;
+      height: 540px;
+      background: radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.98) 0%, rgba(245, 243, 239, 0.88) 60%, rgba(238, 235, 229, 0.92) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .stage-3d-container:active {
+      cursor: grabbing;
+    }
+
+    #seatCanvas {
+      width: 100% !important;
+      height: 100% !important;
+      display: block;
+      outline: none;
+    }
+
+    /* Holographic Telemetry HUD */
+    .stage-hud {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .hud-chip {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--rule);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--fg);
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .hud-chip .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+      animation: pulseDot 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.7; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+
+    .stage-controls-overlay {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 10;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }
+
+    .posture-selector {
+      display: flex;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--rule);
+      padding: 3px;
+      border-radius: 999px;
+      gap: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .posture-btn {
+      border: none;
+      background: transparent;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--fg-soft);
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .posture-btn.active, .posture-btn:hover {
+      background: var(--fg);
+      color: #fff;
+    }
+
+    .tool-skinner {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--rule);
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+    }
+
+    .tool-dot-btn {
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .tool-dot-btn:hover, .tool-dot-btn.active {
+      transform: scale(1.28);
+      box-shadow: 0 0 0 2px var(--fg);
+    }
+
+    .turntable-toggle-btn {
+      border: none;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--rule);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--fg-soft);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      transition: all 0.2s;
+    }
+
+    .turntable-toggle-btn.active, .turntable-toggle-btn:hover {
+      background: var(--fg);
+      color: #fff;
+    }
+
+    /* Telemetry Grid below 3D Stage */
+    .stage-details {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      border-top: 1px solid var(--rule);
+      background: rgba(255, 255, 255, 0.55);
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .detail-item .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--fg-faint);
+      font-weight: 600;
+    }
+
+    .detail-item .val {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--fg);
+    }
+
+    .detail-item .sub {
+      font-size: 11px;
+      color: var(--fg-soft);
+    }
+
+    /* Marketplace Section */
+    .market-filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.5);
+      border-bottom: 1px solid var(--rule);
+      flex-wrap: wrap;
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-tag {
+      font-size: 12px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--fg-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .filter-tag.active, .filter-tag:hover {
+      background: var(--fg);
+      color: #fff;
+      border-color: var(--fg);
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--rule);
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: 12px;
+      gap: 6px;
+    }
+
+    .search-input-wrap input {
+      border: none;
+      outline: none;
+      font-family: inherit;
+      font-size: 12px;
+      color: var(--fg);
+      background: transparent;
+      width: 150px;
+    }
+
+    /* Seat Cards Catalog */
+    .catalog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      max-height: 590px;
+      overflow-y: auto;
+    }
+
+    .catalog-item {
+      background: #ffffff;
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      transition: all 0.25s var(--ease);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .catalog-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      border-color: var(--rule-bold);
+    }
+
+    .catalog-item.selected-seat-card {
+      border-color: var(--kinetic-yellow);
+      box-shadow: 0 0 0 2px var(--kinetic-yellow), 0 8px 24px rgba(255, 190, 11, 0.16);
+      background: linear-gradient(to right, rgba(255, 190, 11, 0.05), #ffffff);
+    }
+
+    .item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tool-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .tool-info h3 {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .host-meta {
+      font-size: 11.5px;
+      color: var(--fg-soft);
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .host-verified {
+      color: #15803d;
+      font-weight: 500;
+    }
+
+    .feature-chips {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      font-size: 10px;
+      font-weight: 500;
+      padding: 2px 7px;
+      background: rgba(13, 12, 11, 0.05);
+      border-radius: 4px;
+      color: var(--fg-soft);
+    }
+
+    .item-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .price-box {
+      text-align: right;
+    }
+
+    .price-now {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--fg);
+      letter-spacing: -.02em;
+    }
+
+    .price-retail {
+      font-size: 11px;
+      color: var(--fg-faint);
+      text-decoration: line-through;
+    }
+
+    .discount-pill {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: #15803d;
+      background: var(--status-active-bg);
+      padding: 2px 7px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+
+    .seats-count {
+      font-size: 11px;
+      color: var(--fg-faint);
+    }
+
+    /* Subscriptions & Escrow Tab Panes */
+    .tab-content-area {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sub-table-wrap {
+      overflow-x: auto;
+    }
+
+    .sub-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .sub-table th {
+      padding: 12px 18px;
+      background: rgba(13, 12, 11, 0.03);
+      color: var(--fg-faint);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      font-weight: 600;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .sub-table td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--fg);
+      vertical-align: middle;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .status-badge.active {
+      background: var(--status-active-bg);
+      color: var(--status-active);
+    }
+
+    .status-badge.escrow {
+      background: var(--status-escrow-bg);
+      color: var(--status-escrow);
+    }
+
+    /* Dispute Resolution Simulator Panel */
+    .dispute-panel {
+      padding: 18px 20px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid var(--rule);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      transition: box-shadow 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .dispute-info {
+      max-width: 65ch;
+    }
+
+    .dispute-info h4 {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .dispute-info p {
+      font-size: 12.5px;
+      color: var(--fg-soft);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(13, 12, 11, 0.55);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s var(--ease);
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--rule);
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s var(--ease-spring);
+    }
+
+    .modal-overlay.open .modal-card {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--rule);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-header h3 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -.02em;
+    }
+
+    .modal-close {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      cursor: pointer;
+      color: var(--fg-soft);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-close:hover {
+      background: rgba(13, 12, 11, 0.06);
+      color: var(--fg);
+    }
+
+    .modal-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--fg-soft);
+    }
+
+    .form-group input, .form-group select {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--rule);
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      background: var(--shade);
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--fg);
+      background: #ffffff;
+    }
+
+    .escrow-breakdown {
+      background: rgba(255, 190, 11, 0.09);
+      border: 1px solid rgba(255, 190, 11, 0.28);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 12.5px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--fg-soft);
+    }
+
+    .breakdown-row.total {
+      border-top: 1px dashed var(--rule-bold);
+      padding-top: 6px;
+      margin-top: 2px;
+      font-weight: 600;
+      color: var(--fg);
+      font-size: 14px;
+    }
+
+    /* Toast Container */
+    .toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 120;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: var(--fg);
+      color: #ffffff;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all 0.3s var(--ease-spring);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast .bolt {
+      color: var(--kinetic-yellow);
+    }
+
+    /* Mobile & Tablet Responsive Rules */
+    @media (max-width: 860px) {
+      .chrome-inner {
+        flex-wrap: wrap;
+      }
+      .nav-tabs {
+        order: 3;
+        width: 100%;
+        justify-content: center;
+        overflow-x: auto;
+      }
+      .stage-details {
+        grid-template-columns: 1fr;
+      }
+      .chrome-actions .pill-ghost {
+        display: none;
+      }
+      .stage-controls-overlay {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .posture-selector, .tool-skinner {
+        justify-content: center;
+      }
+      .turntable-toggle-btn {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Ambient Video & Canvas Stage matching index.html -->
+  <div class="stage">
+    <video id="bgVideo" autoplay muted loop playsinline preload="auto" disablepictureinpicture></video>
+    <canvas id="ambientCanvas"></canvas>
+    <div class="veil"></div>
+    <div class="grain"></div>
+  </div>
+
+  <!-- Navigation Chrome -->
+  <header class="chrome">
+    <div class="chrome-inner">
+      <a href="index.html" class="brand-wrap">
+        <div class="brand-icon">&#9889;</div>
+        <div class="brand-title">SeatSwap™</div>
+        <div class="brand-badge">SaaS Team Exchange</div>
+      </a>
+
+      <nav class="nav-tabs" id="mainNavTabs">
+        <button class="nav-tab-btn active" onclick="switchMainTab('market')">
+          <span>&#128187;</span> SaaS Catalog
+        </button>
+        <button class="nav-tab-btn" onclick="switchMainTab('buyer')">
+          <span>&#128273;</span> My Leases <span class="chip" id="buyerCountBadge" style="font-size:11px; padding:1px 6px; border-radius:999px; background:rgba(13,12,11,0.08); font-weight:600;">2</span>
+        </button>
+        <button class="nav-tab-btn" onclick="switchMainTab('host')">
+          <span>&#128188;</span> Host Center
+        </button>
+      </nav>
+
+      <div class="chrome-actions">
+        <button class="pill pill-yellow" onclick="openHostModal()">
+          <span>+</span> List Idle Seat
+        </button>
+        <a href="index.html" class="pill pill-ghost">
+          Editorial Story &rarr;
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-wrap">
+    <!-- Hero / Headline & Telemetry -->
+    <section class="hero-banner">
+      <div class="hero-title-area">
+        <h1>Micro-Lease Team Seats.<br /><span>Automated Escrow &amp; Access.</span></h1>
+        <p>
+          Save 60%–75% on Figma, Adobe CC, LeetCode, Midjourney, Canva, and Claude. Connect team subscriptions, lease unused seats with zero password sharing, and protect every cent in 30-day smart escrow.
+        </p>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-card">
+          <span class="label">Avg. Savings</span>
+          <span class="val accent">68.4%</span>
+        </div>
+        <div class="metric-card">
+          <span class="label">Platform Fee</span>
+          <span class="val">15% Flat</span>
+        </div>
+        <div class="metric-card">
+          <span class="label">Escrow Vault</span>
+          <span class="val" id="metricVault">$48,290</span>
+        </div>
+        <div class="metric-card">
+          <span class="label">Verified Uptime</span>
+          <span class="val">99.8%</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Master Grid: 3D Ergonomic Seat & Posture Simulator on Left, Interactive Marketplace on Right -->
+    <div class="dashboard-grid">
+      
+      <!-- LEFT: 3D Ergonomic Seat & Seated Avatar Stage -->
+      <section class="glass-card">
+        <div class="card-header">
+          <h2>
+            <span>&#129681;</span> Interactive 3D Ergonomic Seat &amp; Access Telemetry
+          </h2>
+          <span class="chip" style="background:var(--yellow-dim); color:#925800; font-weight:600;">
+            WebGL Spatial Studio
+          </span>
+        </div>
+
+        <div class="stage-3d-container" id="stage3d">
+          <canvas id="seatCanvas"></canvas>
+
+          <!-- Top HUD Overlay -->
+          <div class="stage-hud">
+            <div class="hud-chip">
+              <span class="dot"></span>
+              <span id="hudSeatTitle">Figma Enterprise (Host: @sarah_ux)</span>
+            </div>
+            <div class="hud-chip">
+              <span>&#128274; 100% Zero-Knowledge Auth</span>
+            </div>
+          </div>
+
+          <!-- Bottom Control Overlays -->
+          <div class="stage-controls-overlay">
+            <div class="posture-selector">
+              <button class="posture-btn active" id="btnPostureDeepWork" onclick="setAvatarPosture('deep_work')">Deep Work</button>
+              <button class="posture-btn" id="btnPostureFocus" onclick="setAvatarPosture('focus')">Focus</button>
+              <button class="posture-btn" id="btnPostureRecline" onclick="setAvatarPosture('recline')">Recline</button>
+            </div>
+
+            <div class="tool-skinner">
+              <span style="font-size:11px; color:var(--fg-faint); margin-right:2px;">Tool Lighting:</span>
+              <button class="tool-dot-btn active" style="background:#a259ff;" title="Figma Purple" onclick="setToolSkin('figma', this)"></button>
+              <button class="tool-dot-btn" style="background:#ff1e38;" title="Adobe CC Crimson" onclick="setToolSkin('adobe', this)"></button>
+              <button class="tool-dot-btn" style="background:#ffa116;" title="LeetCode Gold" onclick="setToolSkin('leetcode', this)"></button>
+              <button class="tool-dot-btn" style="background:#4d55ff;" title="Midjourney Indigo" onclick="setToolSkin('midjourney', this)"></button>
+              <button class="tool-dot-btn" style="background:#00c4cc;" title="Canva Cyan" onclick="setToolSkin('canva', this)"></button>
+              <button class="tool-dot-btn" style="background:#d97706;" title="Claude Terracotta" onclick="setToolSkin('claude', this)"></button>
+              <button class="tool-dot-btn" style="background:#10a37f;" title="ChatGPT Emerald" onclick="setToolSkin('chatgpt', this)"></button>
+            </div>
+
+            <button class="turntable-toggle-btn" id="btnTurntable" onclick="toggleTurntable()">
+              <span>&#128260;</span> 360° Orbit
+            </button>
+          </div>
+        </div>
+
+        <div class="stage-details">
+          <div class="detail-item">
+            <span class="label">Access Dispatch Protocol</span>
+            <span class="val" id="telemetryAccess">Work Email Team Invite</span>
+            <span class="sub">No host master passwords shared</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Smart Escrow State</span>
+            <span class="val" id="telemetryEscrow">$12.00 Locked in Vault</span>
+            <span class="sub">30-day term · 48h access probe</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Platform Economics</span>
+            <span class="val" id="telemetryEcon">Host: $10.20 • Fee: 15% ($1.80)</span>
+            <span class="sub">Automated Stripe Connect payout</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- RIGHT: Interactive Tabs (Catalog / My Leases / Host Center) -->
+      <section class="tab-content-area">
+        
+        <!-- PANE 1: SaaS Catalog -->
+        <div class="glass-card" id="paneMarket">
+          <div class="card-header">
+            <h2><span>&#128187;</span> Live SaaS Seat Marketplace</h2>
+            <div class="search-input-wrap">
+              <span>&#128269;</span>
+              <input type="text" id="marketSearch" placeholder="Filter tools, hosts..." oninput="filterCatalog()">
+            </div>
+          </div>
+
+          <div class="market-filter-bar">
+            <div class="filter-tags" id="filterTagsBar">
+              <button class="filter-tag active" data-cat="all" onclick="setCatalogCategory('all', this)">All Seats <span class="chip" id="countAll" style="font-size:10px; padding:1px 6px; border-radius:999px;">8</span></button>
+              <button class="filter-tag" data-cat="design" onclick="setCatalogCategory('design', this)">Design <span class="chip" id="countDesign" style="font-size:10px; padding:1px 6px; border-radius:999px;">3</span></button>
+              <button class="filter-tag" data-cat="dev" onclick="setCatalogCategory('dev', this)">Dev <span class="chip" id="countDev" style="font-size:10px; padding:1px 6px; border-radius:999px;">2</span></button>
+              <button class="filter-tag" data-cat="ai" onclick="setCatalogCategory('ai', this)">AI <span class="chip" id="countAi" style="font-size:10px; padding:1px 6px; border-radius:999px;">2</span></button>
+              <button class="filter-tag" data-cat="productivity" onclick="setCatalogCategory('productivity', this)">Productivity <span class="chip" id="countProductivity" style="font-size:10px; padding:1px 6px; border-radius:999px;">1</span></button>
+            </div>
+            <span style="font-size:11.5px; color:var(--fg-faint); font-weight:500;">
+              15% Platform Escrow Guaranteed
+            </span>
+          </div>
+
+          <div class="catalog-list" id="catalogListContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+
+        <!-- PANE 2: Buyer Leases & Escrow Manager -->
+        <div class="glass-card" id="paneBuyer" style="display:none;">
+          <div class="card-header">
+            <h2><span>&#128273;</span> My Active Leased Seats (Buyer View)</h2>
+            <span class="status-badge active" id="buyerActiveBadge">&#10003; 2 Active in Escrow</span>
+          </div>
+
+          <div class="sub-table-wrap">
+            <table class="sub-table">
+              <thead>
+                <tr>
+                  <th>Tool &amp; Seat</th>
+                  <th>Monthly Lease</th>
+                  <th>Escrow Status</th>
+                  <th>Countdown</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="buyerLeasesTbody">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANE 3: Host Center (Hosted Team Plans) -->
+        <div class="glass-card" id="paneHost" style="display:none;">
+          <div class="card-header">
+            <h2><span>&#128188;</span> My Hosted Team Plans (Host View)</h2>
+            <button class="pill pill-yellow" style="height:32px; padding:0 14px; font-size:12px;" onclick="openHostModal()">
+              + Add Team Plan
+            </button>
+          </div>
+
+          <div class="sub-table-wrap">
+            <table class="sub-table">
+              <thead>
+                <tr>
+                  <th>Team Plan</th>
+                  <th>Leased / Total</th>
+                  <th>Gross Yield</th>
+                  <th>Net Payout (85%)</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="hostPlansTbody">
+                <!-- Dynamically populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Dispute Resolution & Escrow Guarantee Interactive Simulator -->
+        <div class="dispute-panel">
+          <div class="dispute-info">
+            <h4><span>&#128737;</span> SeatSwap Escrow &amp; Dispute Guarantee Engine</h4>
+            <p>
+              Unlike informal WhatsApp / Telegram groups, SeatSwap runs automated 12-hour health checks. If a host drops your seat, smart escrow immediately freezes host payout and issues an instant 100% prorated refund.
+            </p>
+          </div>
+          <button class="pill pill-ghost" id="btnTestDispute" onclick="runDisputeSimulation()">
+            Test Dispute &amp; Refund &rarr;
+          </button>
+        </div>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- 1-Click Lease Checkout Modal -->
+  <div class="modal-overlay" id="leaseModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="leaseModalTitle">Lease Figma Enterprise Seat</h3>
+        <button class="modal-close" onclick="closeLeaseModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="leaseModalFormBody">
+        <p style="font-size:13.5px; color:var(--fg-soft); line-height:1.45;">
+          You are leasing 1 discrete seat. You will receive an official team workspace invitation directly to your email without needing the host's password.
+        </p>
+
+        <div class="form-group">
+          <label>Your Personal / Work Email</label>
+          <input type="email" id="buyerEmailInput" value="designer@studio.dev" placeholder="name@domain.com">
+        </div>
+
+        <div class="escrow-breakdown">
+          <div class="breakdown-row">
+            <span>Host Share (85% Net)</span>
+            <span id="breakdownHostPrice">$10.20/mo</span>
+          </div>
+          <div class="breakdown-row">
+            <span>SeatSwap Escrow &amp; Dispute Protection (15%)</span>
+            <span id="breakdownFee">$1.80/mo</span>
+          </div>
+          <div class="breakdown-row total">
+            <span>Total Monthly Lease (Locked in Escrow)</span>
+            <span id="breakdownTotal">$12.00/mo</span>
+          </div>
+        </div>
+
+        <div style="font-size:11.5px; color:var(--fg-faint); display:flex; align-items:center; gap:6px;">
+          <span>&#128737;</span>
+          <span>Funds released to host only after 48-hour access verification window.</span>
+        </div>
+
+        <button class="pill pill-yellow" id="btnConfirmLease" style="width:100%; height:46px; font-size:14.5px;" onclick="confirmLeaseAction()">
+          Confirm &amp; Authorize Escrow
+        </button>
+      </div>
+
+      <!-- Confirmation state after lease -->
+      <div class="modal-body" id="leaseModalSuccessBody" style="display:none; text-align:center;">
+        <div style="font-size:42px; margin-bottom:4px;">🎉</div>
+        <h3 style="font-size:20px; font-weight:700;">Seat Leased &amp; Escrow Activated!</h3>
+        <p style="font-size:13.5px; color:var(--fg-soft); line-height:1.45;">
+          Your monthly payment is locked in SeatSwap 30-day escrow. Use your automated zero-knowledge invitation link below:
+        </p>
+
+        <div class="form-group" style="text-align:left;">
+          <label>Your Direct Workspace Access Link</label>
+          <div style="display:flex; gap:8px;">
+            <input type="text" id="successInviteLinkInput" readonly style="flex:1; font-family:monospace; font-size:12.5px;">
+            <button class="pill pill-yellow" style="height:40px; padding:0 14px;" onclick="copySuccessInviteLink()">Copy</button>
+          </div>
+        </div>
+
+        <div class="escrow-breakdown" style="text-align:left;">
+          <div class="breakdown-row">
+            <span>Escrow Probe Interval</span>
+            <span style="font-weight:600; color:#15803d;">Active (Every 12h)</span>
+          </div>
+          <div class="breakdown-row">
+            <span>Protection Term</span>
+            <span>30 Days Guaranteed</span>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="pill pill-ghost" style="flex:1; height:42px;" onclick="closeLeaseModal()">Done</button>
+          <button class="pill pill-yellow" style="flex:1; height:42px;" onclick="viewNewlyLeasedSeat()">View in My Leases &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Host Listing Modal ("Monetize Idle Seats") -->
+  <div class="modal-overlay" id="hostModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Monetize Idle Team Seats</h3>
+        <button class="modal-close" onclick="closeHostModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13.5px; color:var(--fg-soft);">
+          List unassigned seats on your company or personal multi-seat plan. Keep your master credentials safe while earning monthly recurring income.
+        </p>
+
+        <div class="form-group">
+          <label>Select SaaS Platform</label>
+          <select id="hostToolSelect" onchange="onHostToolSelected()">
+            <option value="Figma Enterprise" data-retail="45" data-suggest="12">Figma Enterprise / Organization</option>
+            <option value="Adobe CC All Apps" data-retail="60" data-suggest="18.5">Adobe Creative Cloud All Apps</option>
+            <option value="LeetCode Premium" data-retail="35" data-suggest="8">LeetCode Premium</option>
+            <option value="Midjourney Pro" data-retail="60" data-suggest="15">Midjourney Pro Plan</option>
+            <option value="Canva Enterprise" data-retail="15" data-suggest="4.5">Canva Enterprise</option>
+            <option value="Claude Team" data-retail="30" data-suggest="12">Claude Team Workspace</option>
+            <option value="ChatGPT Team" data-retail="25" data-suggest="7.5">ChatGPT Team Workspace</option>
+            <option value="Cursor Pro" data-retail="20" data-suggest="7">Cursor Pro Developer Plan</option>
+            <option value="Notion AI Team" data-retail="18" data-suggest="5.5">Notion AI Team Workspace</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label>Total Plan Seats</label>
+            <input type="number" id="hostTotalSeats" value="5" min="2" max="50" oninput="calcHostEarnings()">
+          </div>
+          <div class="form-group">
+            <label>Idle Seats to List</label>
+            <input type="number" id="hostIdleSeats" value="3" min="1" max="49" oninput="calcHostEarnings()">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label>Monthly Asking Price Per Seat ($)</label>
+            <span id="hostPriceGuidance" style="font-size:11px; color:#15803d; font-weight:500;">Retail: $45 • Save 73%</span>
+          </div>
+          <input type="number" id="hostPricePerSeat" value="12" step="0.5" min="2" max="60" oninput="calcHostEarnings()">
+        </div>
+
+        <div class="escrow-breakdown">
+          <div class="breakdown-row">
+            <span>Estimated Monthly Gross</span>
+            <span id="hostGrossYield">$36.00</span>
+          </div>
+          <div class="breakdown-row">
+            <span>SeatSwap 15% Platform Commission</span>
+            <span id="hostCommission">-$5.40</span>
+          </div>
+          <div class="breakdown-row total">
+            <span>Your Net Take-Home</span>
+            <span id="hostNetYield" style="color:#15803d;">$30.60/month</span>
+          </div>
+        </div>
+
+        <button class="pill pill-yellow" style="width:100%; height:46px; font-size:14.5px;" onclick="publishHostListing()">
+          Publish Seats to Marketplace
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Application Logic & 3D Ergonomic Seat Engine -->
+  <script>
+    /* ==========================================================================
+       1. SaaS Catalog Data State
+       ========================================================================== */
+    const CATALOG_SEATS = [
+      {
+        id: 'figma-org',
+        tool: 'Figma Enterprise',
+        category: 'design',
+        icon: '🎨',
+        iconBg: '#fef3f2',
+        iconColor: '#e11d48',
+        host: '@sarah_ux',
+        hostRating: '4.98★ (42 leases)',
+        retailPrice: 45,
+        leasePrice: 12,
+        seatsAvailable: 2,
+        totalSeats: 5,
+        features: ['Dev Mode Included', 'Enterprise Design Systems', 'Automated Email Invite'],
+        deliveryMethod: 'Work Email Team Invite'
+      },
+      {
+        id: 'adobe-cc',
+        tool: 'Adobe CC All Apps',
+        category: 'design',
+        icon: '✨',
+        iconBg: '#fff1f2',
+        iconColor: '#be123c',
+        host: '@vfx_collective',
+        hostRating: '5.0★ (88 leases)',
+        retailPrice: 60,
+        leasePrice: 18.5,
+        seatsAvailable: 3,
+        totalSeats: 10,
+        features: ['Photoshop, Illustrator, Premiere', '100GB Cloud Storage', 'Firefly AI Credits'],
+        deliveryMethod: 'Adobe Admin Console Invite'
+      },
+      {
+        id: 'canva-pro',
+        tool: 'Canva Enterprise',
+        category: 'design',
+        icon: '📐',
+        iconBg: '#f0fdfa',
+        iconColor: '#0d9488',
+        host: '@growth_creatives',
+        hostRating: '5.0★ (63 leases)',
+        retailPrice: 15,
+        leasePrice: 4.5,
+        seatsAvailable: 3,
+        totalSeats: 5,
+        features: ['Magic Studio AI Suite', 'Brand Kits & 100M+ Assets', 'SVG Vector Exports'],
+        deliveryMethod: 'Canva Magic Member Link'
+      },
+      {
+        id: 'leetcode-pro',
+        tool: 'LeetCode Premium',
+        category: 'dev',
+        icon: '💻',
+        iconBg: '#fffbeb',
+        iconColor: '#d97706',
+        host: '@faang_prep',
+        hostRating: '4.9★ (24 leases)',
+        retailPrice: 35,
+        leasePrice: 8,
+        seatsAvailable: 1,
+        totalSeats: 5,
+        features: ['FAANG Mock Assessments', 'Official Video Solutions', 'Fast Judge Queue'],
+        deliveryMethod: 'Team Magic Link'
+      },
+      {
+        id: 'cursor-pro',
+        tool: 'Cursor Pro Plan',
+        category: 'dev',
+        icon: '⚡',
+        iconBg: '#f5f3ff',
+        iconColor: '#6366f1',
+        host: '@fullstack_ninja',
+        hostRating: '4.96★ (31 leases)',
+        retailPrice: 20,
+        leasePrice: 7,
+        seatsAvailable: 2,
+        totalSeats: 5,
+        features: ['Claude 3.5 Sonnet Coding', 'Cursor Tab Autocomplete', 'Fast Composer Mode'],
+        deliveryMethod: 'Cursor Organization Link'
+      },
+      {
+        id: 'midjourney-pro',
+        tool: 'Midjourney Pro Plan',
+        category: 'ai',
+        icon: '🤖',
+        iconBg: '#eef2ff',
+        iconColor: '#4338ca',
+        host: '@prompt_craft',
+        hostRating: '4.95★ (51 leases)',
+        retailPrice: 60,
+        leasePrice: 15,
+        seatsAvailable: 2,
+        totalSeats: 4,
+        features: ['Stealth Mode Generation', '30 Fast GPU Hours/mo', 'Unlimited Relaxed Jobs'],
+        deliveryMethod: 'Discord Guild Bot Bridge'
+      },
+      {
+        id: 'claude-team',
+        tool: 'Claude Team Workspace',
+        category: 'ai',
+        icon: '🎭',
+        iconBg: '#fff7ed',
+        iconColor: '#c2410c',
+        host: '@deep_engineer',
+        hostRating: '5.0★ (45 leases)',
+        retailPrice: 30,
+        leasePrice: 12,
+        seatsAvailable: 1,
+        totalSeats: 5,
+        features: ['Claude 3.5 Sonnet & Haiku', '200K Context Window', 'Team Projects & Artifacts'],
+        deliveryMethod: 'Anthropic Team Invite'
+      },
+      {
+        id: 'notion-ai',
+        tool: 'Notion AI Team Workspace',
+        category: 'productivity',
+        icon: '📝',
+        iconBg: '#fafaf9',
+        iconColor: '#292524',
+        host: '@product_lead',
+        hostRating: '4.9★ (38 leases)',
+        retailPrice: 18,
+        leasePrice: 5.5,
+        seatsAvailable: 2,
+        totalSeats: 5,
+        features: ['Unlimited AI Q&A across docs', 'Project Tracking Database', 'Enterprise Page History'],
+        deliveryMethod: 'Notion Workspace Invite'
+      }
+    ];
+
+    /* Active Buyer Leases State */
+    let BUYER_LEASES = [
+      {
+        id: 'lease-figma-init',
+        toolId: 'figma-org',
+        tool: 'Figma Enterprise',
+        host: '@sarah_ux',
+        seatNumber: 3,
+        leasePrice: 12.00,
+        retailPrice: 45.00,
+        statusType: 'active',
+        statusLabel: '✓ 12h Health Probe OK',
+        countdown: '18d 14h left',
+        inviteUrl: 'https://seatswap.io/invite/figma-team-f89a2b'
+      },
+      {
+        id: 'lease-leetcode-init',
+        toolId: 'leetcode-pro',
+        tool: 'LeetCode Premium',
+        host: '@faang_prep',
+        seatNumber: 2,
+        leasePrice: 8.00,
+        retailPrice: 35.00,
+        statusType: 'escrow',
+        statusLabel: '⏳ Escrow Vault Locked',
+        countdown: '26d 08h left',
+        inviteUrl: 'https://seatswap.io/invite/leetcode-pro-99bc71'
+      }
+    ];
+
+    /* Host Center Team Plans State */
+    let HOST_PLANS = [
+      {
+        id: 'host-adobe',
+        tool: 'Adobe CC All Apps (10 Seats)',
+        sub: 'Auto-Invite Link Active',
+        leasedCount: 3,
+        totalSeats: 10,
+        gross: 55.50,
+        net: 47.18
+      },
+      {
+        id: 'host-midjourney',
+        tool: 'Midjourney Pro (4 Seats)',
+        sub: 'Discord Guild Relay',
+        leasedCount: 2,
+        totalSeats: 4,
+        gross: 30.00,
+        net: 25.50
+      },
+      {
+        id: 'host-claude',
+        tool: 'Claude Team Workspace (5 Seats)',
+        sub: 'Anthropic Workspace Relay',
+        leasedCount: 4,
+        totalSeats: 5,
+        gross: 48.00,
+        net: 40.80
+      }
+    ];
+
+    let currentCategory = 'all';
+    let selectedSeatId = 'figma-org';
+    let activeSelectedToolForModal = CATALOG_SEATS[0];
+    let escrowVaultTotal = 48290.00;
+
+    function updateCategoryCounts() {
+      const allCount = CATALOG_SEATS.length;
+      const designCount = CATALOG_SEATS.filter(s => s.category === 'design').length;
+      const devCount = CATALOG_SEATS.filter(s => s.category === 'dev').length;
+      const aiCount = CATALOG_SEATS.filter(s => s.category === 'ai').length;
+      const prodCount = CATALOG_SEATS.filter(s => s.category === 'productivity').length;
+
+      const elAll = document.getElementById('countAll');
+      const elDesign = document.getElementById('countDesign');
+      const elDev = document.getElementById('countDev');
+      const elAi = document.getElementById('countAi');
+      const elProd = document.getElementById('countProductivity');
+
+      if (elAll) elAll.textContent = allCount;
+      if (elDesign) elDesign.textContent = designCount;
+      if (elDev) elDev.textContent = devCount;
+      if (elAi) elAi.textContent = aiCount;
+      if (elProd) elProd.textContent = prodCount;
+    }
+
+    function renderCatalog() {
+      const container = document.getElementById('catalogListContainer');
+      const searchQuery = (document.getElementById('marketSearch').value || '').toLowerCase().trim();
+
+      const filtered = CATALOG_SEATS.filter(item => {
+        const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
+        const matchesSearch = item.tool.toLowerCase().includes(searchQuery) || 
+                              item.host.toLowerCase().includes(searchQuery) ||
+                              item.features.some(f => f.toLowerCase().includes(searchQuery));
+        return matchesCategory && matchesSearch;
+      });
+
+      updateCategoryCounts();
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:48px 20px; color:var(--fg-faint);">
+            <p style="font-size:14px; font-weight:500;">No SaaS seats found matching "${searchQuery}".</p>
+            <p style="font-size:12px; margin-top:6px;">Try adjusting your search terms or selecting another category.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => {
+        const discountPct = Math.round((1 - (item.leasePrice / item.retailPrice)) * 100);
+        const isSelected = item.id === selectedSeatId;
+        const isAvailable = item.seatsAvailable > 0;
+
+        return `
+          <div class="catalog-item ${isSelected ? 'selected-seat-card' : ''}" id="card-${item.id}" onclick="selectSeatItem('${item.id}')">
+            <div class="item-left">
+              <div class="tool-avatar" style="background:${item.iconBg}; color:${item.iconColor};">
+                ${item.icon}
+              </div>
+              <div class="tool-info">
+                <h3>
+                  ${item.tool}
+                  <span class="chip" style="font-size:9.5px; text-transform:uppercase;">${item.category}</span>
+                </h3>
+                <div class="host-meta">
+                  <span>Host: <strong>${item.host}</strong></span>
+                  <span class="host-verified">&bull; ${item.hostRating}</span>
+                </div>
+                <div class="feature-chips">
+                  ${item.features.map(f => `<span class="chip">${f}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+
+            <div class="item-right">
+              <div class="price-box">
+                <div class="price-now">$${item.leasePrice.toFixed(2)}<span style="font-size:12px; font-weight:400; color:var(--fg-soft);">/mo</span></div>
+                <div class="price-retail">Retail: $${item.retailPrice}/mo</div>
+                <div class="discount-pill">SAVE ${discountPct}%</div>
+              </div>
+              <div class="seats-count">${isAvailable ? `${item.seatsAvailable} of ${item.totalSeats} seats open` : '<span style="color:#b91c1c; font-weight:600;">Sold Out (Waitlist Open)</span>'}</div>
+              <div style="display:flex; gap:6px;">
+                <button class="pill pill-ghost" style="height:32px; padding:0 12px; font-size:11.5px;" onclick="event.stopPropagation(); selectSeatItem('${item.id}')" title="Inspect this seat in 3D">
+                  <span>&#129681;</span> Inspect in 3D
+                </button>
+                <button class="pill pill-yellow" style="height:32px; padding:0 14px; font-size:12.5px; ${!isAvailable ? 'opacity:0.5; pointer-events:none;' : ''}" onclick="event.stopPropagation(); openLeaseModal('${item.id}')">
+                  ${isAvailable ? 'Lease Seat &rarr;' : 'Full'}
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderBuyerLeases() {
+      const tbody = document.getElementById('buyerLeasesTbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = BUYER_LEASES.map(l => {
+        const discountPct = Math.round((1 - (l.leasePrice / l.retailPrice)) * 100);
+        let badgeClass = 'active';
+        if (l.statusType === 'escrow') badgeClass = 'escrow';
+        else if (l.statusType === 'revoked') badgeClass = 'revoked';
+        else if (l.statusType === 'refunded') badgeClass = 'refunded';
+
+        let badgeStyle = '';
+        if (l.statusType === 'revoked') {
+          badgeStyle = 'background:#fee2e2; color:#b91c1c; border:1px solid #f87171;';
+        } else if (l.statusType === 'refunded') {
+          badgeStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac;';
+        }
+
+        let actionHtml = `
+          <button class="pill pill-yellow" style="height:30px; padding:0 12px; font-size:11.5px;" onclick="copyInviteLink('${l.inviteUrl}')">
+            Copy Link
+          </button>
+        `;
+        if (l.statusType === 'refunded') {
+          actionHtml = `<span style="font-size:11.5px; color:#15803d; font-weight:600;">Escrow Settled</span>`;
+        }
+
+        return `
+          <tr id="row-${l.id}">
+            <td>
+              <strong>${l.tool}</strong><br />
+              <span style="font-size:11px; color:var(--fg-soft);">Host: ${l.host} &bull; Seat #${l.seatNumber}</span>
+            </td>
+            <td>
+              <strong>$${l.leasePrice.toFixed(2)}/mo</strong><br />
+              <span style="font-size:11px; color:#15803d;">Save ${discountPct}% vs retail</span>
+            </td>
+            <td>
+              <span class="status-badge ${badgeClass}" style="${badgeStyle}">
+                ${l.statusLabel}
+              </span>
+            </td>
+            <td>
+              <span style="font-variant-numeric:tabular-nums; font-weight:500;">${l.countdown}</span>
+            </td>
+            <td>
+              ${actionHtml}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      // Update counters
+      const countBadge = document.getElementById('buyerCountBadge');
+      if (countBadge) countBadge.textContent = BUYER_LEASES.length;
+
+      const activeCount = BUYER_LEASES.filter(l => l.statusType === 'active' || l.statusType === 'escrow').length;
+      const activeBadge = document.getElementById('buyerActiveBadge');
+      if (activeBadge) {
+        activeBadge.textContent = `✓ ${activeCount} Active in Escrow`;
+      }
+    }
+
+    function renderHostPlans() {
+      const tbody = document.getElementById('hostPlansTbody');
+      if (!tbody) return;
+
+      tbody.innerHTML = HOST_PLANS.map(p => {
+        const idleCount = p.totalSeats - p.leasedCount;
+        return `
+          <tr>
+            <td>
+              <strong>${p.tool}</strong><br />
+              <span style="font-size:11px; color:var(--fg-soft);">${p.sub}</span>
+            </td>
+            <td><strong>${p.leasedCount} / ${p.totalSeats} seats leased</strong> (${idleCount} idle)</td>
+            <td>$${p.gross.toFixed(2)}/mo</td>
+            <td><strong style="color:#15803d;">$${p.net.toFixed(2)}/mo</strong></td>
+            <td>
+              <button class="pill" style="height:30px; padding:0 12px; font-size:11.5px;" onclick="showToast('Seat telemetry verified: 100% uptime.')">
+                Check Health
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function selectSeatItem(seatId) {
+      selectedSeatId = seatId;
+      const seat = CATALOG_SEATS.find(s => s.id === seatId);
+      if (!seat) return;
+
+      // Update card visual active states
+      document.querySelectorAll('.catalog-item').forEach(card => {
+        card.classList.remove('selected-seat-card');
+      });
+      const activeCard = document.getElementById(`card-${seatId}`);
+      if (activeCard) {
+        activeCard.classList.add('selected-seat-card');
+      }
+
+      // Map to tool theme key
+      let toolKey = 'figma';
+      const nameLower = seat.tool.toLowerCase();
+      if (nameLower.includes('adobe')) toolKey = 'adobe';
+      else if (nameLower.includes('leetcode')) toolKey = 'leetcode';
+      else if (nameLower.includes('midjourney')) toolKey = 'midjourney';
+      else if (nameLower.includes('canva')) toolKey = 'canva';
+      else if (nameLower.includes('claude')) toolKey = 'claude';
+      else if (nameLower.includes('chatgpt')) toolKey = 'chatgpt';
+      else if (nameLower.includes('cursor')) toolKey = 'cursor';
+      else if (nameLower.includes('notion')) toolKey = 'notion';
+
+      applyToolTheme(toolKey, seat);
+
+      // Swivel chair slightly toward user to highlight selection
+      targetRotationY = -0.32;
+
+      showToast(`⚡ Selected: ${seat.tool} (${seat.deliveryMethod})`);
+    }
+
+    function applyToolTheme(toolKey, customSeat) {
+      const theme = TOOL_THEMES[toolKey] || TOOL_THEMES.figma;
+      const seat = customSeat || CATALOG_SEATS.find(s => s.id === selectedSeatId) || CATALOG_SEATS[0];
+
+      // Update 3D Lighting & Visor Color
+      if (pointLight) {
+        pointLight.color.setHex(theme.color);
+      }
+      if (pedestalGlowMat) {
+        pedestalGlowMat.color.setHex(theme.color);
+      }
+      if (typeof visorMat !== 'undefined' && visorMat) {
+        visorMat.color.setHex(theme.color);
+        visorMat.emissive.setHex(theme.color);
+      }
+
+      // Update Holographic Texture with tool details
+      updateHoloTerminal(seat.tool, `STATUS: 200 OK • ACCESS VIA ${seat.deliveryMethod.toUpperCase()}`, theme.hex);
+
+      // Update HUD & Telemetry
+      const hudTitle = document.getElementById('hudSeatTitle');
+      if (hudTitle) hudTitle.textContent = `${seat.tool} (Host: ${seat.host})`;
+
+      const telAccess = document.getElementById('telemetryAccess');
+      if (telAccess) telAccess.textContent = seat.deliveryMethod || theme.access;
+
+      const telEscrow = document.getElementById('telemetryEscrow');
+      if (telEscrow) telEscrow.textContent = `$${seat.leasePrice.toFixed(2)} Locked in Vault`;
+
+      const telEcon = document.getElementById('telemetryEcon');
+      const hostNet = (seat.leasePrice * 0.85).toFixed(2);
+      const fee = (seat.leasePrice * 0.15).toFixed(2);
+      if (telEcon) telEcon.textContent = `Host: $${hostNet} • Fee: 15% ($${fee})`;
+
+      // Update active dot in tool skin bar if matching
+      document.querySelectorAll('.tool-dot-btn').forEach(btn => btn.classList.remove('active'));
+      const activeDot = document.querySelector(`.tool-dot-btn[title*="${toolKey}"]`) || 
+                         document.querySelector(`.tool-dot-btn[onclick*="${toolKey}"]`);
+      if (activeDot) activeDot.classList.add('active');
+    }
+
+    function setCatalogCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderCatalog();
+    }
+
+    function filterCatalog() {
+      renderCatalog();
+    }
+
+    /* ==========================================================================
+       2. Navigation Tabs (Catalog vs Buyer vs Host)
+       ========================================================================== */
+    function switchMainTab(tab) {
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      const pMarket = document.getElementById('paneMarket');
+      const pBuyer = document.getElementById('paneBuyer');
+      const pHost = document.getElementById('paneHost');
+
+      pMarket.style.display = 'none';
+      pBuyer.style.display = 'none';
+      pHost.style.display = 'none';
+
+      const buttons = document.querySelectorAll('.nav-tab-btn');
+
+      if (tab === 'market') {
+        pMarket.style.display = 'flex';
+        if (buttons[0]) buttons[0].classList.add('active');
+        if (history.replaceState) history.replaceState(null, '', '#market');
+      } else if (tab === 'buyer') {
+        pBuyer.style.display = 'flex';
+        if (buttons[1]) buttons[1].classList.add('active');
+        if (history.replaceState) history.replaceState(null, '', '#buyer');
+        renderBuyerLeases();
+      } else if (tab === 'host') {
+        pHost.style.display = 'flex';
+        if (buttons[2]) buttons[2].classList.add('active');
+        if (history.replaceState) history.replaceState(null, '', '#host');
+        renderHostPlans();
+      }
+    }
+
+    /* ==========================================================================
+       3. 1-Click Lease Modal & Escrow Checkout
+       ========================================================================== */
+    let lastGeneratedInviteLink = '';
+
+    function openLeaseModal(seatId) {
+      const seat = CATALOG_SEATS.find(s => s.id === seatId) || CATALOG_SEATS[0];
+      activeSelectedToolForModal = seat;
+
+      document.getElementById('leaseModalTitle').textContent = `Lease ${seat.tool} Seat`;
+      
+      const total = seat.leasePrice;
+      const hostNet = (total * 0.85).toFixed(2);
+      const fee = (total * 0.15).toFixed(2);
+
+      document.getElementById('breakdownHostPrice').textContent = `$${hostNet}/mo`;
+      document.getElementById('breakdownFee').textContent = `$${fee}/mo`;
+      document.getElementById('breakdownTotal').textContent = `$${total.toFixed(2)}/mo`;
+
+      // Show form view, hide success view
+      document.getElementById('leaseModalFormBody').style.display = 'flex';
+      document.getElementById('leaseModalSuccessBody').style.display = 'none';
+
+      document.getElementById('leaseModal').classList.add('open');
+    }
+
+    function closeLeaseModal() {
+      document.getElementById('leaseModal').classList.remove('open');
+    }
+
+    function confirmLeaseAction() {
+      const seat = activeSelectedToolForModal;
+      if (seat.seatsAvailable <= 0) {
+        showToast('⚠️ No seats currently open for this tool.');
+        return;
+      }
+
+      // Decrement available seat count
+      seat.seatsAvailable = Math.max(0, seat.seatsAvailable - 1);
+
+      // Increase Escrow Vault Total
+      escrowVaultTotal += seat.leasePrice;
+      const metricVaultEl = document.getElementById('metricVault');
+      if (metricVaultEl) {
+        metricVaultEl.textContent = `$${escrowVaultTotal.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      }
+
+      const inviteHash = Math.random().toString(36).substring(2, 8);
+      lastGeneratedInviteLink = `https://seatswap.io/invite/${seat.id}-${inviteHash}`;
+      
+      // Add to Buyer Leases state array
+      const newLease = {
+        id: 'lease-' + Date.now(),
+        toolId: seat.id,
+        tool: seat.tool,
+        host: seat.host,
+        seatNumber: Math.floor(Math.random() * 4) + 1,
+        leasePrice: seat.leasePrice,
+        retailPrice: seat.retailPrice,
+        statusType: 'escrow',
+        statusLabel: '⏳ 48h Verification Window',
+        countdown: '30d 00h left',
+        inviteUrl: lastGeneratedInviteLink
+      };
+      BUYER_LEASES.unshift(newLease);
+
+      renderBuyerLeases();
+      renderCatalog();
+
+      // Show confirmation view inside modal
+      document.getElementById('leaseModalFormBody').style.display = 'none';
+      const successBody = document.getElementById('leaseModalSuccessBody');
+      successBody.style.display = 'block';
+      document.getElementById('successInviteLinkInput').value = lastGeneratedInviteLink;
+
+      showToast(`🎉 ${seat.tool} leased! Escrow locked. Invite link generated.`);
+
+      // Also illuminate in 3D stage
+      selectSeatItem(seat.id);
+    }
+
+    function copySuccessInviteLink() {
+      if (lastGeneratedInviteLink) {
+        copyInviteLink(lastGeneratedInviteLink);
+      }
+    }
+
+    function viewNewlyLeasedSeat() {
+      closeLeaseModal();
+      switchMainTab('buyer');
+      const firstRow = document.querySelector('#buyerLeasesTbody tr');
+      if (firstRow) {
+        firstRow.style.backgroundColor = 'rgba(255, 190, 11, 0.18)';
+        setTimeout(() => firstRow.style.backgroundColor = '', 2500);
+      }
+    }
+
+    /* ==========================================================================
+       4. Host Listing Modal & Calculation
+       ========================================================================== */
+    function openHostModal() {
+      document.getElementById('hostModal').classList.add('open');
+      onHostToolSelected();
+    }
+
+    function closeHostModal() {
+      document.getElementById('hostModal').classList.remove('open');
+    }
+
+    function onHostToolSelected() {
+      const select = document.getElementById('hostToolSelect');
+      const opt = select.options[select.selectedIndex];
+      const suggest = parseFloat(opt.getAttribute('data-suggest') || '12');
+      const retail = parseFloat(opt.getAttribute('data-retail') || '45');
+
+      document.getElementById('hostPricePerSeat').value = suggest;
+      const savePct = Math.round((1 - (suggest / retail)) * 100);
+      document.getElementById('hostPriceGuidance').textContent = `Retail: $${retail} • Save ${savePct}%`;
+
+      calcHostEarnings();
+    }
+
+    function calcHostEarnings() {
+      const totalSeats = parseInt(document.getElementById('hostTotalSeats').value || '5');
+      let idleCount = parseInt(document.getElementById('hostIdleSeats').value || '1');
+      const pricePerSeat = parseFloat(document.getElementById('hostPricePerSeat').value || '10');
+
+      if (idleCount >= totalSeats) {
+        idleCount = Math.max(1, totalSeats - 1);
+        document.getElementById('hostIdleSeats').value = idleCount;
+      }
+
+      const gross = idleCount * pricePerSeat;
+      const commission = gross * 0.15;
+      const net = gross - commission;
+
+      document.getElementById('hostGrossYield').textContent = `$${gross.toFixed(2)}`;
+      document.getElementById('hostCommission').textContent = `-$${commission.toFixed(2)}`;
+      document.getElementById('hostNetYield').textContent = `$${net.toFixed(2)}/month`;
+    }
+
+    function publishHostListing() {
+      const select = document.getElementById('hostToolSelect');
+      const toolName = select.options[select.selectedIndex].text;
+      const rawVal = select.value.toLowerCase();
+      const totalSeats = parseInt(document.getElementById('hostTotalSeats').value || '5');
+      const idleSeats = parseInt(document.getElementById('hostIdleSeats').value || '3');
+      const price = parseFloat(document.getElementById('hostPricePerSeat').value || '12');
+
+      if (idleSeats >= totalSeats) {
+        showToast('⚠️ Idle seats must be less than total seats on your team plan.');
+        return;
+      }
+      if (isNaN(price) || price <= 0) {
+        showToast('⚠️ Please enter a valid monthly asking price.');
+        return;
+      }
+
+      // Determine category and branding
+      let realCategory = 'design';
+      let icon = '🎨';
+      let iconBg = '#fef3f2';
+      let iconColor = '#e11d48';
+
+      if (rawVal.includes('leetcode') || rawVal.includes('cursor')) {
+        realCategory = 'dev';
+        icon = rawVal.includes('cursor') ? '⚡' : '💻';
+        iconBg = '#fffbeb';
+        iconColor = '#d97706';
+      } else if (rawVal.includes('midjourney') || rawVal.includes('chatgpt') || rawVal.includes('claude')) {
+        realCategory = 'ai';
+        icon = rawVal.includes('midjourney') ? '🤖' : (rawVal.includes('claude') ? '🎭' : '🧠');
+        iconBg = '#eef2ff';
+        iconColor = '#4338ca';
+      } else if (rawVal.includes('canva')) {
+        realCategory = 'design';
+        icon = '📐';
+        iconBg = '#f0fdfa';
+        iconColor = '#0d9488';
+      } else if (rawVal.includes('notion')) {
+        realCategory = 'productivity';
+        icon = '📝';
+        iconBg = '#fafaf9';
+        iconColor = '#292524';
+      } else if (rawVal.includes('adobe')) {
+        realCategory = 'design';
+        icon = '✨';
+        iconBg = '#fff1f2';
+        iconColor = '#be123c';
+      }
+
+      closeHostModal();
+      showToast(`⚡ Published ${idleSeats} idle seats for ${toolName} to marketplace!`);
+
+      // Add to Host Center State
+      const gross = idleSeats * price;
+      const net = gross * 0.85;
+      HOST_PLANS.unshift({
+        id: 'host-' + Date.now(),
+        tool: `${toolName} (${totalSeats} Seats)`,
+        sub: 'Auto-Invite Link Active',
+        leasedCount: 0,
+        totalSeats: totalSeats,
+        gross: gross,
+        net: net
+      });
+      renderHostPlans();
+
+      // Add to Catalog
+      const newItemId = 'custom-' + Date.now();
+      CATALOG_SEATS.unshift({
+        id: newItemId,
+        tool: toolName,
+        category: realCategory,
+        icon: icon,
+        iconBg: iconBg,
+        iconColor: iconColor,
+        host: '@you (Host)',
+        hostRating: '5.0★ (Just Listed)',
+        retailPrice: Math.round(price * 2.8),
+        leasePrice: price,
+        seatsAvailable: idleSeats,
+        totalSeats: totalSeats,
+        features: ['Automated Team Link', '15% Escrow Backed', 'Zero Passwords Shared'],
+        deliveryMethod: 'Work Email Team Invite'
+      });
+
+      renderCatalog();
+      selectSeatItem(newItemId);
+    }
+
+    /* ==========================================================================
+       5. Interactive Dispute Simulator
+       ========================================================================== */
+    let disputeSimulated = false;
+    let disputeTimers = [];
+
+    function runDisputeSimulation() {
+      if (disputeSimulated) {
+        resetDisputeSimulation();
+        return;
+      }
+      disputeSimulated = true;
+
+      // Clear any pending timers
+      disputeTimers.forEach(clearTimeout);
+      disputeTimers = [];
+
+      // Switch to buyer tab to show dispute resolution in action
+      switchMainTab('buyer');
+      showToast('🛡️ Step 1/3: 12-hour automated health probe pinging team roster...');
+
+      const targetLease = BUYER_LEASES[0];
+      if (!targetLease) return;
+
+      const refundAmount = (targetLease.leasePrice * 0.9).toFixed(2);
+
+      const t1 = setTimeout(() => {
+        showToast('⚠️ Step 2/3: Telemetry detected member dropped from team before 30-day term!');
+        targetLease.statusType = 'revoked';
+        targetLease.statusLabel = '⚠️ Invite Revoked by Host';
+        renderBuyerLeases();
+
+        const t2 = setTimeout(() => {
+          showToast(`💰 Step 3/3: Smart Escrow executed! $${refundAmount} prorated refund returned to Buyer.`);
+          targetLease.statusType = 'refunded';
+          targetLease.statusLabel = `✓ $${refundAmount} Refunded to Vault`;
+          renderBuyerLeases();
+
+          // Decrement Escrow Vault Metric
+          escrowVaultTotal = Math.max(0, escrowVaultTotal - parseFloat(refundAmount));
+          const vaultVal = document.getElementById('metricVault');
+          if (vaultVal) {
+            vaultVal.textContent = `$${escrowVaultTotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          }
+
+          // Update dispute button text to allow reset
+          const dispBtn = document.getElementById('btnTestDispute');
+          if (dispBtn) {
+            dispBtn.textContent = '↺ Reset Dispute Simulation';
+            dispBtn.classList.add('pill-yellow');
+            dispBtn.classList.remove('pill-ghost');
+          }
+        }, 1800);
+        disputeTimers.push(t2);
+      }, 1600);
+      disputeTimers.push(t1);
+    }
+
+    function resetDisputeSimulation() {
+      disputeSimulated = false;
+      disputeTimers.forEach(clearTimeout);
+      disputeTimers = [];
+
+      // Restore first lease
+      if (BUYER_LEASES[0]) {
+        BUYER_LEASES[0].statusType = 'active';
+        BUYER_LEASES[0].statusLabel = '✓ 12h Health Probe OK';
+      }
+      renderBuyerLeases();
+
+      // Reset Escrow Vault Metric
+      escrowVaultTotal = 48290.00;
+      const vaultVal = document.getElementById('metricVault');
+      if (vaultVal) {
+        vaultVal.textContent = '$48,290';
+      }
+
+      const dispBtn = document.getElementById('btnTestDispute');
+      if (dispBtn) {
+        dispBtn.innerHTML = 'Test Dispute &amp; Refund &rarr;';
+        dispBtn.classList.remove('pill-yellow');
+        dispBtn.classList.add('pill-ghost');
+      }
+      showToast('↺ Dispute simulation reset to active escrow state.');
+    }
+
+    function copyInviteLink(url) {
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).catch(() => {});
+      }
+      showToast('📋 Direct Invite Link copied to clipboard!');
+    }
+
+    function showToast(msg) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.innerHTML = `<span class="bolt">&#9889;</span><span>${msg}</span>`;
+      container.appendChild(toast);
+
+      requestAnimationFrame(() => toast.classList.add('show'));
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+
+    /* ==========================================================================
+       6. 3D WebGL Ergonomic Designer Seat & Seated Avatar Engine (Three.js)
+       ========================================================================== */
+    let scene, camera, renderer;
+    let chairGroup, avatarGroup, torsoMesh, headMesh, leftArmGroup, rightArmGroup;
+    let pointLight, spotLight, pedestalGlowMat, visorMat, hologramMat, hologramPlane;
+    let holoCanvas, holoContext, holoTexture;
+    let isDragging = false;
+    let prevMouseX = 0, prevMouseY = 0;
+    let targetRotationY = -0.42, currentRotationY = -0.42;
+    let targetRotationX = 0.22, currentRotationX = 0.22;
+    let currentPosture = 'deep_work';
+    let baseTime = 0;
+    let isAutoSpin = false;
+
+    // Smooth posture animation lerping targets
+    let targetTorsoRotX = -0.12;
+    let targetHeadRotX = 0.12;
+    let targetArmRotX = -0.38;
+    let targetHoloZ = 0.42;
+    let targetHoloRotX = -0.25;
+    let targetHoloY = 0.33;
+
+    let curTorsoRotX = -0.12;
+    let curHeadRotX = 0.12;
+    let curArmRotX = -0.38;
+    let curHoloZ = 0.42;
+    let curHoloRotX = -0.25;
+    let curHoloY = 0.33;
+
+    const TOOL_THEMES = {
+      figma: { name: 'Figma Enterprise', color: 0xa259ff, hex: '#a259ff', access: 'Work Email Team Invite', price: '$12.00', econ: 'Host: $10.20 • Fee: 15%' },
+      adobe: { name: 'Adobe CC All Apps', color: 0xff1e38, hex: '#ff1e38', access: 'Adobe Admin Console Invite', price: '$18.50', econ: 'Host: $15.72 • Fee: 15%' },
+      leetcode: { name: 'LeetCode Premium', color: 0xffa116, hex: '#ffa116', access: 'Team Magic Link', price: '$8.00', econ: 'Host: $6.80 • Fee: 15%' },
+      midjourney: { name: 'Midjourney Pro', color: 0x4d55ff, hex: '#4d55ff', access: 'Discord Guild Bot Bridge', price: '$15.00', econ: 'Host: $12.75 • Fee: 15%' },
+      canva: { name: 'Canva Enterprise', color: 0x00c4cc, hex: '#00c4cc', access: 'Canva Magic Member Link', price: '$4.50', econ: 'Host: $3.82 • Fee: 15%' },
+      claude: { name: 'Claude Team Workspace', color: 0xd97706, hex: '#d97706', access: 'Anthropic Team Invite', price: '$12.00', econ: 'Host: $10.20 • Fee: 15%' },
+      chatgpt: { name: 'ChatGPT Team', color: 0x10a37f, hex: '#10a37f', access: 'OpenAI Workspace Invite', price: '$7.50', econ: 'Host: $6.37 • Fee: 15%' },
+      cursor: { name: 'Cursor Pro Plan', color: 0x6366f1, hex: '#6366f1', access: 'Cursor Organization Link', price: '$7.00', econ: 'Host: $5.95 • Fee: 15%' },
+      notion: { name: 'Notion AI Workspace', color: 0xffbe0b, hex: '#ffbe0b', access: 'Notion Workspace Invite', price: '$5.50', econ: 'Host: $4.68 • Fee: 15%' }
+    };
+
+    function createSoftShadowTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const ctx = canvas.getContext('2d');
+      const grad = ctx.createRadialGradient(128, 128, 10, 128, 128, 120);
+      grad.addColorStop(0, 'rgba(13, 12, 11, 0.28)');
+      grad.addColorStop(0.35, 'rgba(13, 12, 11, 0.14)');
+      grad.addColorStop(0.7, 'rgba(13, 12, 11, 0.04)');
+      grad.addColorStop(1, 'rgba(13, 12, 11, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(canvas);
+    }
+
+    function createHoloCanvas() {
+      holoCanvas = document.createElement('canvas');
+      holoCanvas.width = 512;
+      holoCanvas.height = 320;
+      holoContext = holoCanvas.getContext('2d');
+      holoTexture = new THREE.CanvasTexture(holoCanvas);
+      updateHoloTerminal('FIGMA ENTERPRISE', 'STATUS: 200 OK • ACCESS VIA WORK EMAIL INVITE', '#a259ff');
+      return holoTexture;
+    }
+
+    function updateHoloTerminal(toolTitle, statusSub, brandHex) {
+      if (!holoContext) return;
+      const ctx = holoContext;
+      const w = 512, h = 320;
+      ctx.clearRect(0, 0, w, h);
+
+      // Glass dark backdrop
+      ctx.fillStyle = 'rgba(13, 14, 20, 0.82)';
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(4, 4, w - 8, h - 8, 18);
+        ctx.fill();
+      } else {
+        ctx.fillRect(4, 4, w - 8, h - 8);
+      }
+
+      // Border glow
+      ctx.strokeStyle = brandHex || '#a259ff';
+      ctx.lineWidth = 3;
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(4, 4, w - 8, h - 8, 18);
+        ctx.stroke();
+      } else {
+        ctx.strokeRect(4, 4, w - 8, h - 8);
+      }
+
+      // Header Tag
+      ctx.fillStyle = brandHex || '#a259ff';
+      ctx.font = 'bold 16px "Inter Tight", monospace';
+      ctx.fillText('SEATSWAP™ // ZERO-KNOWLEDGE PROXY', 26, 38);
+
+      // Status Green Dot
+      ctx.beginPath();
+      ctx.arc(482, 32, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#22c55e';
+      ctx.fill();
+
+      // Divider
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(24, 52);
+      ctx.lineTo(488, 52);
+      ctx.stroke();
+
+      // Tool Name
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 26px "Inter Tight", sans-serif';
+      ctx.fillText((toolTitle || 'FIGMA ENTERPRISE').toUpperCase(), 26, 96);
+
+      // Status Sub
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+      ctx.font = '14px "Inter Tight", sans-serif';
+      ctx.fillText(statusSub || 'HEALTH PROBE: 200 OK • 14ms LATENCY', 26, 128);
+      ctx.fillText('SMART ESCROW: 30-DAY BUYER VAULT LOCKED', 26, 154);
+
+      // Telemetry Waveform Bars
+      ctx.fillStyle = brandHex || '#a259ff';
+      for (let i = 0; i < 28; i++) {
+        const barH = 8 + Math.sin(i * 0.45) * 7 + (i % 4) * 4;
+        ctx.fillRect(26 + i * 16, 256 - barH, 9, barH);
+      }
+
+      // Footer
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.48)';
+      ctx.font = '12px monospace';
+      ctx.fillText('ENCRYPTED INVITE RELAY • ZERO MASTER PASSWORDS SHARED', 26, 292);
+
+      if (holoTexture) holoTexture.needsUpdate = true;
+    }
+
+    function init3DStage() {
+      const container = document.getElementById('stage3d');
+      const canvas = document.getElementById('seatCanvas');
+      if (!container || !canvas) return;
+
+      try {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera.position.set(0, 1.7, 4.3);
+        camera.lookAt(0, 0.85, 0);
+
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+        // Balanced studio lighting
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0xdcd8ce, 0.45);
+        hemiLight.position.set(0, 10, 0);
+        scene.add(hemiLight);
+
+        spotLight = new THREE.SpotLight(0xfffaed, 1.2);
+        spotLight.position.set(2.5, 4.5, 3.5);
+        spotLight.angle = 0.65;
+        spotLight.penumbra = 0.8;
+        scene.add(spotLight);
+
+        // Tool brand accent point light
+        pointLight = new THREE.PointLight(0xa259ff, 2.2, 7.0);
+        pointLight.position.set(0, 1.8, 1.3);
+        scene.add(pointLight);
+
+        // Soft Circular Shadow Plane (Procedural gradient - ZERO hard square edges!)
+        const shadowMat = new THREE.MeshBasicMaterial({
+          map: createSoftShadowTexture(),
+          transparent: true,
+          depthWrite: false
+        });
+        const floorShadow = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 3.2), shadowMat);
+        floorShadow.rotation.x = -Math.PI / 2;
+        floorShadow.position.y = 0.005;
+        scene.add(floorShadow);
+
+        // Precision Engineering Pedestal Disc with Brand Underglow
+        pedestalGlowMat = new THREE.MeshBasicMaterial({
+          color: 0xa259ff,
+          transparent: true,
+          opacity: 0.45,
+          side: THREE.DoubleSide
+        });
+        const pedestalRing = new THREE.Mesh(new THREE.RingGeometry(1.22, 1.28, 64), pedestalGlowMat);
+        pedestalRing.rotation.x = -Math.PI / 2;
+        pedestalRing.position.y = 0.01;
+        scene.add(pedestalRing);
+
+        buildChairAndAvatar();
+
+        // Mouse Drag Interaction (Orbit horizontal, pitch vertical smoothly without tilting base)
+        container.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          prevMouseX = e.clientX;
+          prevMouseY = e.clientY;
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
+
+        window.addEventListener('mousemove', (e) => {
+          if (!isDragging) return;
+          const dx = e.clientX - prevMouseX;
+          const dy = e.clientY - prevMouseY;
+          prevMouseX = e.clientX;
+          prevMouseY = e.clientY;
+
+          targetRotationY += dx * 0.008;
+          targetRotationX = Math.max(0.04, Math.min(0.50, targetRotationX + dy * 0.004));
+        });
+
+        // Touch Events for mobile & iPad Retina
+        container.addEventListener('touchstart', (e) => {
+          if (e.touches.length === 1) {
+            isDragging = true;
+            prevMouseX = e.touches[0].clientX;
+            prevMouseY = e.touches[0].clientY;
+          }
+        }, { passive: true });
+
+        window.addEventListener('touchend', () => isDragging = false);
+
+        window.addEventListener('touchmove', (e) => {
+          if (!isDragging || e.touches.length !== 1) return;
+          const dx = e.touches[0].clientX - prevMouseX;
+          const dy = e.touches[0].clientY - prevMouseY;
+          prevMouseX = e.touches[0].clientX;
+          prevMouseY = e.touches[0].clientY;
+
+          targetRotationY += dx * 0.008;
+          targetRotationX = Math.max(0.04, Math.min(0.50, targetRotationX + dy * 0.004));
+        }, { passive: true });
+
+        window.addEventListener('resize', onWindowResize);
+
+        animate3D();
+      } catch (err) {
+        console.warn('WebGL initialization fallback:', err);
+      }
+    }
+
+    function buildChairAndAvatar() {
+      chairGroup = new THREE.Group();
+      scene.add(chairGroup);
+
+      const darkMat = new THREE.MeshStandardMaterial({
+        color: 0x1c1e24,
+        roughness: 0.35,
+        metalness: 0.35
+      });
+
+      const chromeMat = new THREE.MeshStandardMaterial({
+        color: 0xd8d8d8,
+        roughness: 0.12,
+        metalness: 0.95
+      });
+
+      const meshMat = new THREE.MeshStandardMaterial({
+        color: 0x272a34,
+        roughness: 0.55,
+        metalness: 0.15
+      });
+
+      // 1. Spider Star Base (5 legs)
+      const baseHub = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.14, 0.08, 16), darkMat);
+      baseHub.position.y = 0.14;
+      chairGroup.add(baseHub);
+
+      for (let i = 0; i < 5; i++) {
+        const angle = (i * Math.PI * 2) / 5;
+        const legGroup = new THREE.Group();
+        legGroup.rotation.y = angle;
+
+        const leg = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.04, 0.65), darkMat);
+        leg.position.set(0, 0.12, 0.35);
+        legGroup.add(leg);
+
+        // Caster wheel resting on floor
+        const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 12), darkMat);
+        wheel.rotation.z = Math.PI / 2;
+        wheel.position.set(0, 0.04, 0.65);
+        legGroup.add(wheel);
+
+        chairGroup.add(legGroup);
+      }
+
+      // 2. Central Pneumatic Cylinder
+      const piston = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, 0.38, 20), chromeMat);
+      piston.position.y = 0.33;
+      chairGroup.add(piston);
+
+      const seatUnderBase = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.07, 0.35), darkMat);
+      seatUnderBase.position.y = 0.51;
+      chairGroup.add(seatUnderBase);
+
+      // 3. Sculpted Ergonomic Seat Pan (Waterfall front)
+      const seatPan = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.08, 0.78), meshMat);
+      seatPan.position.set(0, 0.56, 0.04);
+      chairGroup.add(seatPan);
+
+      // 4. Curved Ergonomic Backrest Frame
+      const backSpine = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.04, 0.72, 12), darkMat);
+      backSpine.position.set(0, 0.98, -0.32);
+      backSpine.rotation.x = -0.12;
+      chairGroup.add(backSpine);
+
+      const backMesh = new THREE.Mesh(new THREE.BoxGeometry(0.70, 0.66, 0.05), meshMat);
+      backMesh.position.set(0, 1.02, -0.28);
+      backMesh.rotation.x = -0.12;
+      chairGroup.add(backMesh);
+
+      // Lumbar Support Pad
+      const lumbarPad = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.12, 0.06), darkMat);
+      lumbarPad.position.set(0, 0.84, -0.24);
+      chairGroup.add(lumbarPad);
+
+      // Headrest
+      const headrestStem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.20, 8), chromeMat);
+      headrestStem.position.set(0, 1.40, -0.36);
+      chairGroup.add(headrestStem);
+
+      const headrestPillow = new THREE.Mesh(new THREE.CylinderGeometry(0.10, 0.10, 0.34, 16), meshMat);
+      headrestPillow.rotation.z = Math.PI / 2;
+      headrestPillow.position.set(0, 1.48, -0.34);
+      chairGroup.add(headrestPillow);
+
+      // 5. 3D Armrests
+      [-0.42, 0.42].forEach(xSide => {
+        const armStem = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.24, 10), darkMat);
+        armStem.position.set(xSide, 0.68, 0.0);
+        chairGroup.add(armStem);
+
+        const armPad = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.04, 0.32), darkMat);
+        armPad.position.set(xSide, 0.80, 0.02);
+        chairGroup.add(armPad);
+      });
+
+      // ==========================================
+      // 6. Seated Person (Stylized Modern Mannequin)
+      // ==========================================
+      avatarGroup = new THREE.Group();
+      chairGroup.add(avatarGroup);
+
+      const avatarMat = new THREE.MeshStandardMaterial({
+        color: 0x363842,
+        roughness: 0.45,
+        metalness: 0.12
+      });
+
+      visorMat = new THREE.MeshStandardMaterial({
+        color: 0xa259ff,
+        emissive: 0xa259ff,
+        emissiveIntensity: 0.85,
+        roughness: 0.15
+      });
+
+      // Pelvis / Hips (Resting on cushion)
+      const hips = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.14, 0.38), avatarMat);
+      hips.position.set(0, 0.66, 0.04);
+      avatarGroup.add(hips);
+
+      // Thighs
+      [-0.17, 0.17].forEach(x => {
+        const thigh = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.13, 0.52), avatarMat);
+        thigh.position.set(x, 0.65, 0.25);
+        avatarGroup.add(thigh);
+
+        // Shins extending vertically toward floor
+        const shin = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.065, 0.54, 12), avatarMat);
+        shin.position.set(x, 0.34, 0.48);
+        avatarGroup.add(shin);
+
+        // Feet resting flat on the ground plane
+        const foot = new THREE.Mesh(new THREE.BoxGeometry(0.13, 0.07, 0.22), darkMat);
+        foot.position.set(x, 0.04, 0.52);
+        avatarGroup.add(foot);
+      });
+
+      // Torso Group for posture kinematics
+      torsoMesh = new THREE.Group();
+      torsoMesh.position.set(0, 0.74, 0.0);
+      avatarGroup.add(torsoMesh);
+
+      const chest = new THREE.Mesh(new THREE.BoxGeometry(0.50, 0.46, 0.24), avatarMat);
+      chest.position.set(0, 0.24, -0.06);
+      torsoMesh.add(chest);
+
+      // Head & Holographic AR Visor
+      headMesh = new THREE.Group();
+      headMesh.position.set(0, 0.58, -0.08);
+      torsoMesh.add(headMesh);
+
+      const headBall = new THREE.Mesh(new THREE.SphereGeometry(0.15, 24, 24), avatarMat);
+      headMesh.add(headBall);
+
+      const visor = new THREE.Mesh(new THREE.CylinderGeometry(0.155, 0.155, 0.065, 24, 1, false, 0, Math.PI), visorMat);
+      visor.rotation.y = -Math.PI / 2;
+      visor.position.set(0, 0.02, 0.02);
+      headMesh.add(visor);
+
+      // Arms & Hands (Articulated at shoulders)
+      leftArmGroup = new THREE.Group();
+      leftArmGroup.position.set(-0.30, 0.40, -0.06);
+      torsoMesh.add(leftArmGroup);
+
+      const leftForearm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.30, 0.09), avatarMat);
+      leftForearm.rotation.x = -0.3;
+      leftForearm.position.set(0, -0.14, 0.05);
+      leftArmGroup.add(leftForearm);
+
+      const leftLowerArm = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.26, 0.075), avatarMat);
+      leftLowerArm.rotation.x = Math.PI / 2.3;
+      leftLowerArm.position.set(0, -0.28, 0.18);
+      leftArmGroup.add(leftLowerArm);
+
+      rightArmGroup = new THREE.Group();
+      rightArmGroup.position.set(0.30, 0.40, -0.06);
+      torsoMesh.add(rightArmGroup);
+
+      const rightForearm = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.30, 0.09), avatarMat);
+      rightForearm.rotation.x = -0.3;
+      rightForearm.position.set(0, -0.14, 0.05);
+      rightArmGroup.add(rightForearm);
+
+      const rightLowerArm = new THREE.Mesh(new THREE.BoxGeometry(0.075, 0.26, 0.075), avatarMat);
+      rightLowerArm.rotation.x = Math.PI / 2.3;
+      rightLowerArm.position.set(0, -0.28, 0.18);
+      rightArmGroup.add(rightLowerArm);
+
+      // Floating Holographic Work Terminal (With procedural canvas texture!)
+      const holoGeo = new THREE.PlaneGeometry(0.64, 0.40);
+      hologramMat = new THREE.MeshBasicMaterial({
+        map: createHoloCanvas(),
+        transparent: true,
+        opacity: 0.92,
+        side: THREE.DoubleSide
+      });
+      hologramPlane = new THREE.Mesh(holoGeo, hologramMat);
+      hologramPlane.position.set(0, 0.33, 0.42);
+      hologramPlane.rotation.x = -0.25;
+      torsoMesh.add(hologramPlane);
+    }
+
+    function setAvatarPosture(mode) {
+      currentPosture = mode;
+      document.querySelectorAll('.posture-btn').forEach(b => b.classList.remove('active'));
+
+      if (mode === 'deep_work') {
+        const btn = document.getElementById('btnPostureDeepWork');
+        if (btn) btn.classList.add('active');
+        targetTorsoRotX = -0.14;
+        targetHeadRotX = 0.14;
+        targetArmRotX = -0.45;
+        targetHoloZ = 0.39;
+        targetHoloRotX = -0.28;
+        targetHoloY = 0.31;
+        showToast('Posture: Deep Work (Active focus, forward lean, high productivity)');
+      } else if (mode === 'focus') {
+        const btn = document.getElementById('btnPostureFocus');
+        if (btn) btn.classList.add('active');
+        targetTorsoRotX = -0.04;
+        targetHeadRotX = 0.04;
+        targetArmRotX = -0.30;
+        targetHoloZ = 0.44;
+        targetHoloRotX = -0.20;
+        targetHoloY = 0.35;
+        showToast('Posture: Focus (Balanced 90° ergonomic posture)');
+      } else if (mode === 'recline') {
+        const btn = document.getElementById('btnPostureRecline');
+        if (btn) btn.classList.add('active');
+        targetTorsoRotX = -0.26;
+        targetHeadRotX = -0.10;
+        targetArmRotX = -0.15;
+        targetHoloZ = 0.50;
+        targetHoloRotX = -0.36;
+        targetHoloY = 0.38;
+        showToast('Posture: Ergonomic Recline (115° review & audit tilt)');
+      }
+    }
+
+    function setToolSkin(toolKey, btnEl) {
+      // Find seat corresponding to this tool
+      let match = CATALOG_SEATS.find(s => s.tool.toLowerCase().includes(toolKey));
+      if (!match) {
+        if (toolKey === 'figma') match = CATALOG_SEATS.find(s => s.id === 'figma-org');
+        else if (toolKey === 'adobe') match = CATALOG_SEATS.find(s => s.id === 'adobe-cc');
+        else if (toolKey === 'leetcode') match = CATALOG_SEATS.find(s => s.id === 'leetcode-pro');
+        else if (toolKey === 'midjourney') match = CATALOG_SEATS.find(s => s.id === 'midjourney-pro');
+        else if (toolKey === 'canva') match = CATALOG_SEATS.find(s => s.id === 'canva-pro');
+        else if (toolKey === 'claude') match = CATALOG_SEATS.find(s => s.id === 'claude-team');
+        else if (toolKey === 'chatgpt') match = CATALOG_SEATS.find(s => s.tool.toLowerCase().includes('chatgpt')) || CATALOG_SEATS[0];
+      }
+
+      if (match) {
+        selectSeatItem(match.id);
+      } else {
+        applyToolTheme(toolKey);
+      }
+
+      const activeBtn = btnEl || (typeof event !== 'undefined' && event?.target ? event.target : null);
+      if (activeBtn) {
+        document.querySelectorAll('.tool-dot-btn').forEach(b => b.classList.remove('active'));
+        activeBtn.classList.add('active');
+      }
+      showToast(`Illuminated 3D Seat Profile: ${TOOL_THEMES[toolKey].name}`);
+    }
+
+    function toggleTurntable() {
+      isAutoSpin = !isAutoSpin;
+      const btn = document.getElementById('btnTurntable');
+      if (btn) {
+        if (isAutoSpin) {
+          btn.classList.add('active');
+          showToast('360° Turntable Orbit: Active');
+        } else {
+          btn.classList.remove('active');
+          showToast('360° Turntable Orbit: Paused (Manual Drag Enabled)');
+        }
+      }
+    }
+
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      baseTime += 0.02;
+
+      // Auto-spin logic
+      if (isAutoSpin && !isDragging) {
+        targetRotationY += 0.008;
+      }
+
+      // Smooth turntable swivel & camera pitch
+      currentRotationY += (targetRotationY - currentRotationY) * 0.08;
+      currentRotationX += (targetRotationX - currentRotationX) * 0.08;
+
+      if (chairGroup) {
+        chairGroup.rotation.y = currentRotationY;
+      }
+
+      // Adjust camera vertical height instead of tilting chair off ground
+      if (camera) {
+        camera.position.y = 1.35 + currentRotationX * 1.5;
+        camera.lookAt(0, 0.85, 0);
+      }
+
+      // Smooth posture kinematic interpolation
+      curTorsoRotX += (targetTorsoRotX - curTorsoRotX) * 0.08;
+      curHeadRotX += (targetHeadRotX - curHeadRotX) * 0.08;
+      curArmRotX += (targetArmRotX - curArmRotX) * 0.08;
+      curHoloZ += (targetHoloZ - curHoloZ) * 0.08;
+      curHoloRotX += (targetHoloRotX - curHoloRotX) * 0.08;
+      curHoloY += (targetHoloY - curHoloY) * 0.08;
+
+      if (torsoMesh && headMesh) {
+        const breath = Math.sin(baseTime * 1.5) * 0.015;
+        torsoMesh.rotation.x = curTorsoRotX + breath;
+        headMesh.rotation.x = curHeadRotX - breath * 0.5;
+
+        if (leftArmGroup) leftArmGroup.rotation.x = curArmRotX;
+        if (rightArmGroup) rightArmGroup.rotation.x = curArmRotX;
+
+        // Floating hologram gentle bobbing
+        if (hologramPlane) {
+          hologramPlane.position.z = curHoloZ;
+          hologramPlane.position.y = curHoloY + Math.sin(baseTime * 2.0) * 0.012;
+          hologramPlane.rotation.x = curHoloRotX;
+        }
+      }
+
+      if (renderer && scene && camera) {
+        renderer.render(scene, camera);
+      }
+    }
+
+    function onWindowResize() {
+      const container = document.getElementById('stage3d');
+      if (!container || !renderer || !camera) return;
+      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(container.clientWidth, container.clientHeight);
+    }
+
+    /* ==========================================================================
+       7. Cinematic Background Animation matching index.html
+       ========================================================================== */
+    function initBackgroundAnimation() {
+      const video = document.getElementById('bgVideo');
+      const canvas = document.getElementById('ambientCanvas');
+
+      if (video) {
+        video.src = "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/45567745-d826-44a2-a5ce-7ef670944e60.mp4";
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Autoplay policy or offline; canvas provides continuous ambient motion
+          });
+        }
+      }
+
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let w = canvas.width = window.innerWidth;
+        let h = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+          w = canvas.width = window.innerWidth;
+          h = canvas.height = window.innerHeight;
+        });
+
+        let t = 0;
+        function renderAmbient() {
+          requestAnimationFrame(renderAmbient);
+          t += 0.007;
+
+          ctx.clearRect(0, 0, w, h);
+
+          // Kinetic amber/yellow subtle ambient light drift
+          const gx1 = w * (0.35 + Math.sin(t * 0.7) * 0.15);
+          const gy1 = h * (0.25 + Math.cos(t * 0.5) * 0.12);
+          const rad1 = Math.min(w, h) * 0.65;
+          const grad1 = ctx.createRadialGradient(gx1, gy1, 10, gx1, gy1, rad1);
+          grad1.addColorStop(0, 'rgba(255, 190, 11, 0.12)');
+          grad1.addColorStop(0.5, 'rgba(255, 214, 102, 0.04)');
+          grad1.addColorStop(1, 'rgba(242, 240, 236, 0)');
+          ctx.fillStyle = grad1;
+          ctx.fillRect(0, 0, w, h);
+
+          // Second soft lilac/studio glow
+          const gx2 = w * (0.75 + Math.cos(t * 0.6) * 0.14);
+          const gy2 = h * (0.70 + Math.sin(t * 0.8) * 0.15);
+          const rad2 = Math.min(w, h) * 0.55;
+          const grad2 = ctx.createRadialGradient(gx2, gy2, 10, gx2, gy2, rad2);
+          grad2.addColorStop(0, 'rgba(162, 89, 255, 0.06)');
+          grad2.addColorStop(1, 'rgba(242, 240, 236, 0)');
+          ctx.fillStyle = grad2;
+          ctx.fillRect(0, 0, w, h);
+        }
+        renderAmbient();
+      }
+    }
+
+    /* URL Hash Routing for deep links */
+    function handleHashRoute() {
+      const hash = window.location.hash;
+      if (hash === '#host') {
+        switchMainTab('host');
+      } else if (hash === '#buyer') {
+        switchMainTab('buyer');
+      } else if (hash === '#dispute') {
+        const d = document.querySelector('.dispute-panel');
+        if (d) {
+          d.scrollIntoView({ behavior: 'smooth' });
+          d.style.boxShadow = '0 0 0 3px var(--kinetic-yellow)';
+          setTimeout(() => d.style.boxShadow = '', 2500);
+        }
+      }
+    }
+
+    /* Initialize everything on load */
+    window.addEventListener('DOMContentLoaded', () => {
+      initBackgroundAnimation();
+      renderCatalog();
+      renderBuyerLeases();
+      renderHostPlans();
+      
+      if (typeof THREE !== 'undefined') {
+        init3DStage();
+      } else {
+        console.warn('Three.js CDN unavailable. 3D WebGL stage running in offline fallback.');
+      }
+
+      ['leaseModal', 'hostModal'].forEach(id => {
+        const modal = document.getElementById(id);
+        if (modal) {
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+              modal.classList.remove('open');
+            }
+          });
+        }
+      });
+
+      window.addEventListener('hashchange', handleHashRoute);
+      handleHashRoute();
+    });
+  </script>
+</body>
+</html>
