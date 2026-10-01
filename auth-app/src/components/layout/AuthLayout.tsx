@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 interface AuthLayoutProps {
   children: React.ReactNode
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
+  useEffect(() => {
+    // Force dark mode on auth pages
+    document.documentElement.classList.add('dark')
+  }, [])
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Video Background */}
@@ -21,27 +26,27 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         />
       </video>
 
-      {/* Dark overlay for readability */}
-      <div className="absolute inset-0 bg-background/60 z-[1]" />
+      {/* Dark overlay for readability - dark mode only */}
+      <div className="absolute inset-0 bg-black/40 z-[1]" />
 
       {/* Navigation Bar */}
       <nav className="relative z-10 flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
         <a
           href="/index.html"
-          className="text-3xl tracking-tight text-foreground"
-          style={{ fontFamily: "'Instrument Serif', serif" }}
+          className="text-3xl tracking-tight"
+          style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
         >
           SeatSwap<sup className="text-xs">®</sup>
         </a>
 
         <div className="hidden md:flex items-center gap-8">
-          <a href="/index.html" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="/index.html" className="text-sm transition-colors hover:opacity-70" style={{ color: '#ffffff' }}>
             Home
           </a>
-          <a href="/dashboard.html" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="/dashboard.html" className="text-sm transition-colors hover:opacity-70" style={{ color: '#ffffff' }}>
             Browse Seats
           </a>
-          <a href="/index.html#how" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <a href="/index.html#how" className="text-sm transition-colors hover:opacity-70" style={{ color: '#ffffff' }}>
             How it Works
           </a>
         </div>
