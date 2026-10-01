@@ -109,11 +109,11 @@ const SignUp: React.FC = () => {
           <div className="text-center mb-12 animate-fade-rise">
             <h1
               className="text-5xl md:text-6xl leading-[0.95] tracking-[-2.46px] mb-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
+              style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
             >
-              Begin your <em className="not-italic text-muted-foreground">journey</em>
+              Begin your <em className="not-italic" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>journey</em>
             </h1>
-            <p className="text-muted-foreground text-base mt-6">
+            <p className="text-base mt-6" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Create an account to access exclusive SaaS seats
             </p>
           </div>
@@ -197,7 +197,7 @@ const SignUp: React.FC = () => {
                   <div className="w-full border-t border-input"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-muted/30 text-muted-foreground">
+                  <span className="px-4 bg-muted/30" style={{ color: '#ffffff' }}>
                     Already have an account?
                   </span>
                 </div>
@@ -206,7 +206,8 @@ const SignUp: React.FC = () => {
               {/* Login Link */}
               <Link
                 to="/login"
-                className="block text-center text-sm text-foreground hover:text-muted-foreground transition-colors"
+                className="block text-center text-sm transition-colors hover:opacity-70"
+                style={{ color: '#ffffff' }}
               >
                 Sign in instead
               </Link>
@@ -214,11 +215,11 @@ const SignUp: React.FC = () => {
           </div>
 
           {/* Terms */}
-          <p className="text-center text-xs text-muted-foreground mt-8 animate-fade-rise-delay-2">
+          <p className="text-center text-xs mt-8 animate-fade-rise-delay-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             By creating an account, you agree to our{' '}
-            <a href="#" className="text-foreground hover:underline">Terms of Service</a>
+            <a href="#" className="hover:underline" style={{ color: '#ffffff' }}>Terms of Service</a>
             {' '}and{' '}
-            <a href="#" className="text-foreground hover:underline">Privacy Policy</a>
+            <a href="#" className="hover:underline" style={{ color: '#ffffff' }}>Privacy Policy</a>
           </p>
         </div>
       </div>
