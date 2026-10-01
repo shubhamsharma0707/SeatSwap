@@ -8,24 +8,24 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "hsl(201 100% 13%)",
-        foreground: "hsl(0 0% 100%)",
+        background: "hsl(45 33% 94%)",
+        foreground: "hsl(30 12% 5%)",
         muted: {
-          DEFAULT: "hsl(0 0% 10%)",
-          foreground: "hsl(240 4% 66%)",
+          DEFAULT: "hsl(45 20% 88%)",
+          foreground: "hsl(30 12% 40%)",
         },
         primary: {
-          DEFAULT: "hsl(0 0% 100%)",
-          foreground: "hsl(0 0% 4%)",
+          DEFAULT: "hsl(30 12% 5%)",
+          foreground: "hsl(45 33% 94%)",
         },
-        secondary: "hsl(0 0% 10%)",
-        accent: "hsl(0 0% 10%)",
-        border: "hsl(0 0% 18%)",
-        input: "hsl(0 0% 18%)",
+        secondary: "hsl(45 20% 88%)",
+        accent: "hsl(60 38% 88%)",
+        border: "hsl(30 12% 5% / 0.16)",
+        input: "hsl(30 12% 5% / 0.16)",
       },
       fontFamily: {
-        display: ["'Instrument Serif'", "serif"],
-        body: ["'Inter'", "sans-serif"],
+        display: ["'Inter Tight'", "sans-serif"],
+        body: ["'Inter Tight'", "sans-serif"],
       },
       keyframes: {
         "fade-rise": {
