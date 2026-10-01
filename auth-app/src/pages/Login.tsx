@@ -92,11 +92,11 @@ const Login: React.FC = () => {
           <div className="text-center mb-12 animate-fade-rise">
             <h1
               className="text-5xl md:text-6xl leading-[0.95] tracking-[-2.46px] mb-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
+              style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
             >
-              Welcome <em className="not-italic text-muted-foreground">back</em>
+              Welcome <em className="not-italic" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>back</em>
             </h1>
-            <p className="text-muted-foreground text-base mt-6">
+            <p className="text-base mt-6" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Sign in to access your account
             </p>
           </div>
@@ -146,12 +146,13 @@ const Login: React.FC = () => {
                     className="w-4 h-4 rounded border-input bg-muted/30 text-foreground focus:ring-2 focus:ring-foreground/20"
                     disabled={isLoading}
                   />
-                  <span className="text-sm text-muted-foreground">Remember me</span>
+                  <span className="text-sm" style={{ color: '#ffffff' }}>Remember me</span>
                 </label>
 
                 <Link
                   to="/reset-password"
-                  className="text-sm text-foreground hover:text-muted-foreground transition-colors"
+                  className="text-sm font-medium transition-colors hover:opacity-70"
+                  style={{ color: '#ffffff' }}
                 >
                   Forgot password?
                 </Link>
@@ -173,7 +174,7 @@ const Login: React.FC = () => {
                   <div className="w-full border-t border-input"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-muted/30 text-muted-foreground">
+                  <span className="px-4 bg-muted/30" style={{ color: '#ffffff' }}>
                     Don't have an account?
                   </span>
                 </div>
@@ -182,7 +183,8 @@ const Login: React.FC = () => {
               {/* Sign Up Link */}
               <Link
                 to="/signup"
-                className="block text-center text-sm text-foreground hover:text-muted-foreground transition-colors"
+                className="block text-center text-sm font-medium transition-colors hover:opacity-70"
+                style={{ color: '#ffffff' }}
               >
                 Create an account
               </Link>
@@ -190,7 +192,7 @@ const Login: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-muted-foreground mt-8 animate-fade-rise-delay-2">
+          <p className="text-center text-xs mt-8 animate-fade-rise-delay-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             Protected by enterprise-grade security
           </p>
         </div>
