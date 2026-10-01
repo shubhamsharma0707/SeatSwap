@@ -19,26 +19,70 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" crossorigin>
   <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     :root {
+      --fg: #0d0c0b;
+      --fg-soft: rgba(13,12,11,.64);
+      --fg-faint: rgba(13,12,11,.42);
+      --shade: #f2f0ec;
+      --rule: rgba(13,12,11,.16);
+      --ease: cubic-bezier(.22,.61,.36,1);
+      --pill-bg: #0a0908;
+      --pill-fg: #ffffff;
       --cream: #eef0d0;
-      --ink: #101010;
+      --ink: #0d0c0b;
 
-      /* Apple HIG Dark Ground Typography & Color System */
-      --apple-primary: #f5f5f7;       /* Apple high-contrast text */
-      --apple-secondary: #a1a1a6;     /* Apple secondary gray */
-      --apple-tertiary: #86868b;      /* Apple tertiary caption gray */
-      --apple-border: rgba(255, 255, 255, 0.14);  /* Apple hairline border */
-      --apple-border-light: rgba(255, 255, 255, 0.12);
-      --apple-border-strong: rgba(255, 255, 255, 0.16);
+      /* Unified color system */
+      --apple-primary: #0d0c0b;
+      --apple-secondary: rgba(13,12,11,.64);
+      --apple-tertiary: rgba(13,12,11,.42);
+      --apple-border: rgba(13,12,11,.16);
+      --apple-border-light: rgba(13,12,11,.12);
+      --apple-border-strong: rgba(13,12,11,.20);
       --apple-frosted-filter: blur(20px) saturate(180%);
 
-      /* Apple Typography Stack */
-      --font-apple: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
-      --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      /* Typography Stack */
+      --font-apple: 'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+      --font-display: 'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+      --font-text: 'Inter Tight','Helvetica Neue',Helvetica,Arial,sans-serif;
+
+      /* Additional theme variables */
+      --toggle-bg: rgba(13,12,11,.06);
+      --card-bg: rgba(255,255,255,.92);
+      --card-border: rgba(13,12,11,.08);
+      --accent-gold: #8b7d3a;
+      --accent-gold-bg: rgba(139,125,58,0.12);
+      --accent-gold-border: rgba(139,125,58,0.30);
+    }
+
+    [data-theme="dark"] {
+      --fg: #ffffff;
+      --fg-soft: rgba(255,255,255,.85);
+      --fg-faint: rgba(255,255,255,.60);
+      --shade: #0d0c0b;
+      --rule: rgba(255,255,255,.20);
+      --pill-bg: #f2f0ec;
+      --pill-fg: #0a0908;
+      --cream: #d4c896;
+      --ink: #ffffff;
+
+      /* Unified color system - dark */
+      --apple-primary: #ffffff;
+      --apple-secondary: rgba(255,255,255,.85);
+      --apple-tertiary: rgba(255,255,255,.65);
+      --apple-border: rgba(255,255,255,.20);
+      --apple-border-light: rgba(255,255,255,.15);
+      --apple-border-strong: rgba(255,255,255,.30);
+
+      /* Additional theme variables - dark */
+      --toggle-bg: rgba(255,255,255,.08);
+      --card-bg: rgba(13,12,11,.92);
+      --card-border: rgba(255,255,255,.12);
+      --accent-gold: #e6d4a0;
+      --accent-gold-bg: rgba(230,212,160,0.15);
+      --accent-gold-border: rgba(230,212,160,0.40);
     }
 
     *, *::before, *::after {
@@ -52,9 +96,9 @@
     }
 
     body {
-      background: #0d0d0d;
+      background: var(--shade);
       overflow-x: hidden;
-      color: var(--apple-primary);
+      color: var(--fg);
       font-family: var(--font-apple);
       font-size: 15px;
       line-height: 1.47;
@@ -67,7 +111,7 @@
     h1, h2, h3, h4, h5, h6 {
       font-family: var(--font-apple);
       font-weight: 600;
-      color: var(--apple-primary);
+      color: var(--fg);
       letter-spacing: -0.015em;
     }
 
@@ -90,7 +134,7 @@
       min-height: 600px;
       overflow: hidden;
       isolation: isolate;
-      background: #0d0d0d;
+      background: var(--shade);
     }
 
     .hero__inner {
@@ -159,8 +203,8 @@
       z-index: 1;
       pointer-events: none;
       background:
-        linear-gradient(to bottom, rgba(0,0,0,.30) 0%, rgba(0,0,0,.09) 20%, rgba(0,0,0,0) 38%),
-        linear-gradient(to top,    rgba(0,0,0,.18) 0%, rgba(0,0,0,0) 26%),
+        linear-gradient(to bottom, rgba(13,12,11,.30) 0%, rgba(13,12,11,.09) 20%, rgba(13,12,11,0) 38%),
+        linear-gradient(to top,    rgba(13,12,11,.18) 0%, rgba(13,12,11,0) 26%),
         linear-gradient(120deg,    rgba(120,64,18,.14), rgba(150,96,32,.10));
     }
 
@@ -223,20 +267,20 @@
     }
 
     .btn--dark {                      /* nav */
-      background: #0b0b0b;
-      color: var(--apple-primary);
+      background: rgba(13,12,11,.95);
+      color: #ffffff;
       font-size: clamp(12px, .88vw, 18px);
       padding: .86em 1.32em;
-      border: 1px solid var(--apple-border);
+      border: 1px solid rgba(13,12,11,.20);
     }
 
     .btn--dark:hover {
-      background: #242424;
-      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(13,12,11,.85);
+      border-color: rgba(13,12,11,.30);
     }
 
     .btn--cream {                     /* primary, in hero */
-      background: var(--cream);
+      background: #d4c896;
       color: var(--ink);
       font-size: 1em;
       font-weight: 600;
@@ -245,12 +289,12 @@
     }
 
     .btn--cream:hover {
-      background: #f3f5da;
+      background: #c9bc88;
     }
 
     .btn--glass {                     /* secondary, in hero */
-      background: rgba(255, 255, 255, .14);
-      color: var(--apple-primary);
+      background: rgba(255, 255, 255, .75);
+      color: var(--fg);
       font-size: 1em;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -261,7 +305,7 @@
     }
 
     .btn--glass:hover {
-      background: rgba(255, 255, 255, .24);
+      background: rgba(255, 255, 255, .85);
     }
 
     /* Headline block (Section 10) */
@@ -285,7 +329,7 @@
       line-height: 1.10;
       letter-spacing: -0.02em;
       color: var(--apple-primary);
-      text-shadow: 0 1px 16px rgba(0, 0, 0, .45);
+      text-shadow: none;
     }
 
     .hero__actions,
@@ -359,9 +403,9 @@
       bottom: calc(var(--panel-bottom) - .2em);
       left: calc(100% - 32.7%);
       width: 16.5%;
-      background: var(--cream);
+      background: #f4f3e8;
       border-radius: var(--radius);
-      box-shadow: 0 12px 34px -14px rgba(0, 0, 0, .45);
+      box-shadow: 0 12px 34px -14px rgba(13, 12, 11, .25);
       pointer-events: none;
     }
 
@@ -386,7 +430,7 @@
       display: flex;
       align-items: flex-start;
       color: var(--apple-primary);
-      text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+      text-shadow: none;
     }
 
     .compare__head .h-feature,
@@ -429,14 +473,14 @@
       padding-right: 1em;
       letter-spacing: -.01em;
       color: var(--apple-primary);
-      text-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+      text-shadow: none;
       line-height: 1.25;
       cursor: pointer;
       transition: color .18s ease;
     }
 
     .row-label:hover {
-      color: var(--cream);
+      color: #8b7d3a;
     }
 
     .row-hugo,
@@ -449,8 +493,8 @@
     .row-vet,
     .table__cell--retail {
       justify-content: center;
-      color: var(--apple-secondary);
-      text-shadow: 0 1px 6px rgba(0, 0, 0, .3);
+      color: var(--fg);
+      text-shadow: none;
     }
 
     /* Hairline dividers */
@@ -495,13 +539,13 @@
       font-weight: 600;
       font-size: 1.02em;
       letter-spacing: -.015em;
-      text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+      text-shadow: none;
     }
 
     .totals span:first-child,
     .totals-label {
       padding-left: var(--pad-x);
-      color: var(--apple-secondary);
+      color: var(--fg-soft);
     }
 
     .totals span:nth-child(n+2),
@@ -519,7 +563,7 @@
 
     .totals span:nth-child(3),
     .totals-value--retail {
-      color: var(--apple-secondary);
+      color: var(--fg);
     }
 
     /* Footnote (Section 12) */
@@ -529,10 +573,10 @@
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
-      color: var(--apple-tertiary);
+      color: var(--fg-soft);
       letter-spacing: -.005em;
       line-height: 1.47;
-      text-shadow: 0 1px 6px rgba(0, 0, 0, .4);
+      text-shadow: none;
     }
 
     /* Responsive — single breakpoint at 820px (Section 15) */
@@ -618,7 +662,7 @@
     }
 
     .modal-card {
-      background: #111111;
+      background: rgba(255,255,255,.95);
       border: 1px solid var(--apple-border);
       border-radius: 24px;
       max-width: 500px;
@@ -630,6 +674,12 @@
       color: var(--apple-primary);
       backdrop-filter: var(--apple-frosted-filter);
       -webkit-backdrop-filter: var(--apple-frosted-filter);
+    }
+
+    [data-theme="dark"] .modal-card {
+      background: rgba(20, 20, 20, 0.98);
+      border: 1px solid rgba(255,255,255,.20);
+      box-shadow: 0 32px 70px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255,255,255,.15);
     }
 
     .modal-overlay.is-active .modal-card {
@@ -708,8 +758,8 @@
 
     .modal-opt-btn:hover,
     .modal-opt-btn.is-selected {
-      background: rgba(238, 240, 208, 0.07);
-      border-color: rgba(238, 240, 208, 0.35);
+      background: rgba(139, 125, 58, 0.12);
+      border-color: rgba(139, 125, 58, 0.50);
     }
 
     .modal-opt-btn.is-selected {
@@ -736,12 +786,16 @@
       font-family: var(--font-apple);
       font-size: 16px;
       font-weight: 600;
-      color: var(--cream);
+      color: #8b7d3a;
+    }
+
+    [data-theme="dark"] .modal-opt-price {
+      color: #e6d4a0;
     }
 
     .modal-escrow-box {
-      background: rgba(238, 240, 208, 0.04);
-      border: 1px dashed rgba(238, 240, 208, 0.22);
+      background: rgba(139, 125, 58, 0.10);
+      border: 1px dashed rgba(139, 125, 58, 0.35);
       border-radius: 14px;
       padding: 14px 16px;
       margin-bottom: 22px;
@@ -752,8 +806,18 @@
     }
 
     .modal-escrow-box strong {
-      color: var(--cream);
+      color: #8b7d3a;
       font-weight: 600;
+    }
+
+    [data-theme="dark"] .modal-escrow-box {
+      background: rgba(230, 212, 160, 0.12);
+      border: 1px dashed rgba(230, 212, 160, 0.40);
+      color: rgba(255,255,255,.85);
+    }
+
+    [data-theme="dark"] .modal-escrow-box strong {
+      color: #e6d4a0;
     }
 
     .modal-confirm-btn {
@@ -777,6 +841,15 @@
     .modal-confirm-btn:hover {
       background: #f4f6dc;
       transform: translateY(-1px);
+    }
+
+    [data-theme="dark"] .modal-confirm-btn {
+      background: #d4c896;
+      color: #0a0908;
+    }
+
+    [data-theme="dark"] .modal-confirm-btn:hover {
+      background: #e6d4a0;
     }
 
     .modal-confirm-btn:active {
@@ -815,25 +888,25 @@
 
     .form-input:focus,
     .form-select:focus {
-      border-color: var(--cream);
-      box-shadow: 0 0 0 1px rgba(238, 240, 208, 0.3);
+      border-color: #8b7d3a;
+      box-shadow: 0 0 0 1px rgba(139, 125, 58, 0.45);
     }
 
     .form-select option {
-      background: #141414;
+      background: var(--shade);
       color: var(--apple-primary);
     }
 
     .form-yield-preview {
-      background: linear-gradient(102deg, rgba(238, 240, 208, 0.08), rgba(238, 240, 208, 0.02));
-      border: 1px solid rgba(238, 240, 208, 0.24);
+      background: linear-gradient(102deg, rgba(139, 125, 58, 0.15), rgba(238, 240, 208, 0.02));
+      border: 1px solid rgba(139, 125, 58, 0.35);
       border-radius: 16px;
       padding: 16px 20px;
       margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: inset 0 1px 0 rgba(238, 240, 208, 0.12);
+      box-shadow: inset 0 1px 0 rgba(139, 125, 58, 0.18);
     }
 
     .yield-label {
@@ -847,10 +920,10 @@
       font-family: var(--font-apple);
       font-size: 26px;
       font-weight: 600;
-      color: var(--cream);
+      color: #8b7d3a;
       letter-spacing: -0.015em;
       line-height: 1;
-      text-shadow: 0 2px 14px rgba(238, 240, 208, 0.25);
+      text-shadow: 0 2px 14px rgba(139, 125, 58, 0.40);
     }
 
     /* ========================================================
@@ -893,7 +966,7 @@
       left: 15%;
       width: clamp(280px, 32vw, 600px);
       height: clamp(280px, 32vw, 600px);
-      background: radial-gradient(circle, rgba(238, 240, 208, 0.14) 0%, rgba(238, 240, 208, 0) 70%);
+      background: radial-gradient(circle, rgba(139, 125, 58, 0.20) 0%, rgba(238, 240, 208, 0) 70%);
     }
 
     .ambient-orb--amber {
@@ -956,11 +1029,47 @@
     .currency-toggle button.active {
       background: var(--apple-primary);
       color: #0d0d0d;
-      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+      box-shadow: 0 1px 3px rgba(13,12,11,.2);
     }
     .currency-toggle button:hover:not(.active) {
       color: var(--apple-primary);
     }
+
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--toggle-bg);
+      border: 1px solid var(--rule);
+      cursor: pointer;
+      transition: all .25s var(--ease);
+      padding: 0;
+      color: var(--fg);
+      backdrop-filter: var(--apple-frosted-filter);
+      -webkit-backdrop-filter: var(--apple-frosted-filter);
+    }
+    .theme-toggle:hover {
+      background: var(--fg);
+      color: var(--shade);
+    }
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      transition: transform .3s var(--ease);
+    }
+    .theme-toggle:hover svg {
+      transform: rotate(20deg);
+    }
+    [data-theme="dark"] .theme-toggle .sun-icon { display: block; }
+    [data-theme="dark"] .theme-toggle .moon-icon { display: none; }
+    [data-theme="light"] .theme-toggle .sun-icon,
+    :root:not([data-theme]) .theme-toggle .sun-icon { display: none; }
+    [data-theme="light"] .theme-toggle .moon-icon,
+    :root:not([data-theme]) .theme-toggle .moon-icon { display: block; }
 
     .nav__back {
       font-size: clamp(12px, .88vw, 16px);
@@ -1020,9 +1129,9 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: var(--cream);
-      background: rgba(238, 240, 208, 0.06);
-      border: 1px solid rgba(238, 240, 208, 0.18);
+      color: #8b7d3a;
+      background: rgba(139, 125, 58, 0.12);
+      border: 1px solid rgba(139, 125, 58, 0.30);
       padding: 5px 14px;
       border-radius: 999px;
       margin-bottom: 18px;
@@ -1032,8 +1141,8 @@
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: var(--cream);
-      box-shadow: 0 0 8px rgba(238, 240, 208, 0.7);
+      background: #8b7d3a;
+      box-shadow: 0 0 8px rgba(139, 125, 58, 0.5);
       display: inline-block;
       flex-shrink: 0;
       opacity: 0.9;
@@ -1051,7 +1160,7 @@
 
     .section-title i {
       font-style: italic;
-      color: var(--cream);
+      color: #8b7d3a;
       font-weight: 600;
     }
 
@@ -1113,7 +1222,7 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(238, 240, 208, 0.12) 0%, transparent 60%);
+      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139, 125, 58, 0.18) 0%, transparent 60%);
       opacity: 0;
       pointer-events: none;
       transition: opacity 0.3s ease;
@@ -1124,7 +1233,7 @@
     }
 
     .pillar-card:hover {
-      border-color: rgba(238, 240, 208, 0.35);
+      border-color: rgba(139, 125, 58, 0.50);
       box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(238, 240, 208, 0.15);
     }
 
@@ -1158,7 +1267,7 @@
       font-size: 32px;
       font-weight: 600;
       letter-spacing: -0.02em;
-      color: var(--cream);
+      color: #8b7d3a;
       opacity: 0.95;
       line-height: 1;
     }
@@ -1167,7 +1276,7 @@
       font-family: var(--font-apple);
       font-size: 11px;
       font-weight: 600;
-      color: var(--apple-tertiary);
+      color: rgba(13,12,11,.55);
       letter-spacing: 0.07em;
       text-transform: uppercase;
     }
@@ -1181,9 +1290,9 @@
       letter-spacing: 0.07em;
       padding: 4px 10px;
       border-radius: 999px;
-      background: rgba(238, 240, 208, 0.08);
-      border: 1px solid rgba(238, 240, 208, 0.2);
-      color: var(--cream);
+      background: rgba(139, 125, 58, 0.15);
+      border: 1px solid rgba(139, 125, 58, 0.35);
+      color: #6b5d2a;
     }
 
     /* 3D Zoom-out Icon Stage */
@@ -1203,8 +1312,8 @@
       position: absolute;
       inset: 0;
       border-radius: 14px;
-      background: linear-gradient(135deg, rgba(238, 240, 208, 0.12), rgba(255, 255, 255, 0.03));
-      border: 1px solid rgba(238, 240, 208, 0.22);
+      background: linear-gradient(135deg, rgba(139, 125, 58, 0.18), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(139, 125, 58, 0.35);
       box-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
       transform: translateZ(0);
     }
@@ -1217,7 +1326,7 @@
       justify-content: center;
       transform: translateZ(24px) scale(var(--icon-zoom, 1));
       transform-style: preserve-3d;
-      color: var(--cream);
+      color: #8b7d3a;
       animation: float3d 5s ease-in-out infinite;
     }
 
@@ -1234,7 +1343,7 @@
       width: 24px;
       height: 24px;
       filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
-      stroke: var(--cream);
+      stroke: #8b7d3a;
     }
 
     .pillar-title {
@@ -1316,7 +1425,7 @@
     .filter-btn.is-active {
       background: var(--cream);
       color: var(--ink);
-      border-color: var(--cream);
+      border-color: #8b7d3a;
       font-weight: 600;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
@@ -1334,8 +1443,8 @@
     }
 
     .search-box:focus-within {
-      border-color: var(--cream);
-      box-shadow: 0 0 0 1px rgba(238, 240, 208, 0.3);
+      border-color: #8b7d3a;
+      box-shadow: 0 0 0 1px rgba(139, 125, 58, 0.45);
     }
 
     .search-box svg {
@@ -1383,7 +1492,7 @@
 
     .catalog-card:hover:not(.is-tilting) {
       transform: perspective(1000px) translateY(-5px) scale(var(--card-zoom, 1));
-      border-color: rgba(238, 240, 208, 0.35);
+      border-color: rgba(139, 125, 58, 0.50);
       box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(238, 240, 208, 0.15);
     }
 
@@ -1417,8 +1526,8 @@
     }
 
     .card-overhang-pill .card-save-badge {
-      background: #111111;
-      color: var(--cream);
+      background: rgba(255,255,255,.95);
+      color: #8b7d3a;
       font-size: 10px;
       font-weight: 600;
       text-transform: uppercase;
@@ -1451,18 +1560,18 @@
       position: relative;
       perspective: 600px;
       transform-style: preserve-3d;
-      background: linear-gradient(135deg, rgba(238, 240, 208, 0.12), rgba(255, 255, 255, 0.03));
-      border: 1px solid rgba(238, 240, 208, 0.22);
+      background: linear-gradient(135deg, rgba(139, 125, 58, 0.18), rgba(255, 255, 255, 0.03));
+      border: 1px solid rgba(139, 125, 58, 0.35);
       box-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
       transform: scale(var(--icon-zoom, 1)) rotateX(var(--icon-tilt-x, 8deg)) rotateY(var(--icon-tilt-y, -8deg));
       will-change: transform;
       transition: box-shadow 0.28s ease, border-color 0.28s ease;
-      color: var(--cream);
+      color: #8b7d3a;
     }
 
     .catalog-card:hover .tool-icon-box {
       transform: scale(1.06) rotateX(0deg) rotateY(0deg) translateZ(8px);
-      border-color: rgba(238, 240, 208, 0.4);
+      border-color: rgba(139, 125, 58, 0.55);
       box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
       transition: box-shadow 0.28s ease, border-color 0.28s ease;
     }
@@ -1476,13 +1585,13 @@
     }
 
     .modal-notice {
-      background: rgba(238, 240, 208, 0.08);
-      border: 1px solid rgba(238, 240, 208, 0.25);
+      background: rgba(139, 125, 58, 0.15);
+      border: 1px solid rgba(139, 125, 58, 0.40);
       border-radius: 12px;
       padding: 12px 14px;
       margin-bottom: 16px;
       font-size: 12.5px;
-      color: var(--cream);
+      color: #8b7d3a;
       line-height: 1.5;
       animation: noticeFade 0.25s ease-out;
     }
@@ -1598,7 +1707,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--cream);
+      color: #8b7d3a;
       opacity: 0.9;
       text-align: right;
       white-space: nowrap;
@@ -1641,7 +1750,7 @@
     .card-features-list li svg {
       width: 13px;
       height: 13px;
-      color: var(--cream);
+      color: #8b7d3a;
       flex-shrink: 0;
       opacity: 0.95;
     }
@@ -1729,7 +1838,7 @@
       left: 24px;
       right: 24px;
       height: 1px;
-      background: rgba(238, 240, 208, 0.22);
+      background: rgba(139, 125, 58, 0.35);
     }
 
     .telemetry-num {
@@ -1748,7 +1857,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--cream);
+      color: #8b7d3a;
       opacity: 0.9;
     }
 
@@ -1817,7 +1926,7 @@
 
     /* Dispute Sim Box */
     .dispute-box {
-      background: rgba(238, 240, 208, 0.04);
+      background: rgba(139, 125, 58, 0.10);
       border: 1px solid rgba(238, 240, 208, 0.18);
       border-radius: 16px;
       padding: 20px;
@@ -1858,14 +1967,14 @@
 
     .dispute-sim-btn:hover {
       background: rgba(255, 255, 255, 0.16);
-      border-color: var(--cream);
+      border-color: #8b7d3a;
       transform: translateY(-1px);
     }
 
     /* Footer */
     .footer {
       border-top: 1px solid var(--apple-border);
-      background: #090909;
+      background: rgba(242,240,236,.98);
       padding: clamp(60px, 7vw, 90px) 0 40px;
       position: relative;
       z-index: 5;
@@ -1906,7 +2015,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: var(--cream);
+      color: #8b7d3a;
       margin-bottom: 16px;
     }
 
@@ -1930,7 +2039,7 @@
     }
 
     .footer-link:hover {
-      color: var(--cream);
+      color: #8b7d3a;
     }
 
     .footer-bottom {
@@ -1983,6 +2092,14 @@
         font-size: 11px;
         padding: .65em .95em;
       }
+      .theme-toggle {
+        width: 38px;
+        height: 38px;
+      }
+      .theme-toggle svg {
+        width: 18px;
+        height: 18px;
+      }
     }
 
     @media (max-width: 640px) {
@@ -2014,6 +2131,14 @@
       }
       .currency-toggle {
         order: -1;
+      }
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+      }
+      .theme-toggle svg {
+        width: 16px;
+        height: 16px;
       }
       .nav__back span {
         display: none;
@@ -2062,6 +2187,14 @@
             <button id="currencyUSD" class="active">USD</button>
             <button id="currencyINR">INR</button>
           </div>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+            <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
+          </button>
           <button type="button" class="btn btn--dark nav__pill" id="navStartLeasingBtn">Start leasing</button>
         </div>
       </nav>
@@ -2199,7 +2332,7 @@
                 </p>
                 <div class="pillar-footer">
                   <span>Zero root credential exposure</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--cream);">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
@@ -2229,7 +2362,7 @@
                 </p>
                 <div class="pillar-footer">
                   <span>Guaranteed instant prorated refund</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--cream);">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
@@ -2258,7 +2391,7 @@
                 </p>
                 <div class="pillar-footer">
                   <span>12-hour automated telemetry check</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--cream);">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
@@ -2576,7 +2709,7 @@
               <div class="form-yield-preview" style="margin-bottom: 0;">
                 <div>
                   <div class="yield-label">Gross: <span id="inlineGross">$72.00</span> • Fee (15%): <span id="inlineFee">-$10.80</span></div>
-                  <div class="yield-label" style="margin-top: 4px; font-weight: 500; color: var(--cream); letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px;">Your Monthly Net (85%):</div>
+                  <div class="yield-label" style="margin-top: 4px; font-weight: 500; color: #8b7d3a; letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px;">Your Monthly Net (85%):</div>
                 </div>
                 <div class="yield-val" id="inlineNet">$61.20/mo</div>
               </div>
@@ -2637,7 +2770,7 @@
                 <div class="feed-item">
                   <div>
                     <strong style="color: var(--apple-primary); font-weight: 600;">Figma Enterprise</strong> <span style="color: var(--apple-secondary);">seat invited via @stripe relay</span>
-                    <div style="font-size: 11.5px; color: var(--cream); margin-top: 3px; display: flex; align-items: center; gap: 5px;">
+                    <div style="font-size: 11.5px; color: #8b7d3a; margin-top: 3px; display: flex; align-items: center; gap: 5px;">
                       <svg class="check-svg" viewBox="0 0 16 16" fill="currentColor" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; flex-shrink: 0;" aria-hidden="true">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.739a.75.75 0 0 1 1.04-.208z"/>
                       </svg>
@@ -2649,7 +2782,7 @@
                 <div class="feed-item">
                   <div>
                     <strong style="color: var(--apple-primary); font-weight: 600;">Adobe CC All Apps</strong> <span style="color: var(--apple-secondary);">monthly escrow released to @studiovault</span>
-                    <div style="font-size: 11.5px; color: var(--cream); margin-top: 3px; display: flex; align-items: center; gap: 5px;">
+                    <div style="font-size: 11.5px; color: #8b7d3a; margin-top: 3px; display: flex; align-items: center; gap: 5px;">
                       <svg class="check-svg" viewBox="0 0 16 16" fill="currentColor" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; flex-shrink: 0;" aria-hidden="true">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.739a.75.75 0 0 1 1.04-.208z"/>
                       </svg>
@@ -2673,7 +2806,7 @@
                 <div class="feed-item">
                   <div>
                     <strong style="color: var(--apple-primary); font-weight: 600;">ChatGPT Team</strong> <span style="color: var(--apple-secondary);">relay alias issued to buyer</span>
-                    <div style="font-size: 11.5px; color: var(--cream); margin-top: 3px; display: flex; align-items: center; gap: 5px;">
+                    <div style="font-size: 11.5px; color: #8b7d3a; margin-top: 3px; display: flex; align-items: center; gap: 5px;">
                       <svg class="check-svg" viewBox="0 0 16 16" fill="currentColor" style="width: 12px; height: 12px; display: inline-block; vertical-align: middle; flex-shrink: 0;" aria-hidden="true">
                         <path fill-rule="evenodd" clip-rule="evenodd" d="M12.416 3.376a.75.75 0 0 1 .208 1.04l-5 7.5a.75.75 0 0 1-1.154.114l-3-3a.75.75 0 0 1 1.06-1.06l2.353 2.353 4.493-6.739a.75.75 0 0 1 1.04-.208z"/>
                       </svg>
@@ -2697,15 +2830,15 @@
 
               <div class="dispute-box" id="disputeBox">
                 <div class="dispute-step" id="disputeStep1">
-                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: var(--cream); width: 26px; display: inline-block;">01.</span>
+                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: #8b7d3a; width: 26px; display: inline-block;">01.</span>
                   <span>Sentinel probe pings workspace seat (Active: Adobe CC $18/mo, Day 12/30)</span>
                 </div>
                 <div class="dispute-step" id="disputeStep2" style="opacity: 0.5;">
-                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: var(--cream); width: 26px; display: inline-block;">02.</span>
+                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: #8b7d3a; width: 26px; display: inline-block;">02.</span>
                   <span>Escrow freeze: Host payout halted immediately upon probe failure</span>
                 </div>
                 <div class="dispute-step" id="disputeStep3" style="opacity: 0.5;">
-                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: var(--cream); width: 26px; display: inline-block;">03.</span>
+                  <span style="font-family: var(--font-apple); font-weight: 600; font-size: 14px; color: #8b7d3a; width: 26px; display: inline-block;">03.</span>
                   <span>Prorata refund: $10.80 (18 unused days) credited back to buyer wallet</span>
                 </div>
               </div>
@@ -2726,7 +2859,7 @@
           <div class="footer-top">
             <div>
               <div class="footer-brand-title">
-                <svg class="brand__mark" viewBox="0 0 16 16" fill="currentColor" style="width: 1.25em; height: 1.25em; color: var(--cream);" aria-hidden="true">
+                <svg class="brand__mark" viewBox="0 0 16 16" fill="currentColor" style="width: 1.25em; height: 1.25em; color: #8b7d3a;" aria-hidden="true">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4 1.75C3.31 1.75 2.75 2.31 2.75 3v4.25c0 .69.56 1.25 1.25 1.25h3.25V7H4V3h4V1.75H4zm8 12.5c.69 0 1.25-.56 1.25-1.25V8.75c0-.69-.56-1.25-1.25-1.25H8.75V9H12v4H8v1.25h4zM10.854 2.146a.5.5 0 0 1 0 .708L9.707 4H13.5a.5.5 0 0 1 0 1H9.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 0 1 .708 0zM5.146 13.854a.5.5 0 0 1 0-.708L6.293 12H2.5a.5.5 0 0 1 0-1h3.793L5.146 9.854a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708 0z"/>
                 </svg>
                 <span style="font-family: var(--font-apple); font-size: 22px; font-weight: 600; letter-spacing: -0.015em; color: var(--apple-primary);">SeatSwap</span>
@@ -2755,10 +2888,10 @@
             <div>
               <div class="footer-col-title">Protocol &amp; Security</div>
               <ul class="footer-links">
-                <li><span class="footer-link" style="cursor: default;"><span style="color: var(--cream); font-weight: 600;">§</span> 30-Day Smart Escrow</span></li>
-                <li><span class="footer-link" style="cursor: default;"><span style="color: var(--cream); font-weight: 600;">§</span> Zero-Knowledge Relay</span></li>
-                <li><span class="footer-link" style="cursor: default;"><span style="color: var(--cream); font-weight: 600;">§</span> 12h Autonomous Probes</span></li>
-                <li><span class="footer-link" style="cursor: default;"><span style="color: var(--cream); font-weight: 600;">§</span> 85% Host Payout Yield</span></li>
+                <li><span class="footer-link" style="cursor: default;"><span style="color: #8b7d3a; font-weight: 600;">§</span> 30-Day Smart Escrow</span></li>
+                <li><span class="footer-link" style="cursor: default;"><span style="color: #8b7d3a; font-weight: 600;">§</span> Zero-Knowledge Relay</span></li>
+                <li><span class="footer-link" style="cursor: default;"><span style="color: #8b7d3a; font-weight: 600;">§</span> 12h Autonomous Probes</span></li>
+                <li><span class="footer-link" style="cursor: default;"><span style="color: #8b7d3a; font-weight: 600;">§</span> 85% Host Payout Yield</span></li>
                 <li><a href="javascript:window.scrollTo({top: 0, behavior: 'smooth'})" class="footer-link">&uarr; Back to Top</a></li>
               </ul>
             </div>
@@ -3012,7 +3145,7 @@
         if (notice) {
           const inviteHash = Math.random().toString(36).substring(2, 8);
           notice.style.display = 'block';
-          notice.innerHTML = `<strong>Escrow Locked:</strong> 1x ${toolName} seat reserved at ${priceText}.<br>Official relay alias dispatched: <code style="color:var(--cream); background:rgba(0,0,0,0.3); padding:1px 5px; border-radius:4px;">buyer.${inviteHash}@relay.seatswap.io</code>.<br>48-Hour access probation window active.`;
+          notice.innerHTML = `<strong>Escrow Locked:</strong> 1x ${toolName} seat reserved at ${priceText}.<br>Official relay alias dispatched: <code style="color:var(--cream); background:rgba(13,12,11,0.3); padding:1px 5px; border-radius:4px;">buyer.${inviteHash}@relay.seatswap.io</code>.<br>48-Hour access probation window active.`;
         }
 
         setTimeout(() => {
@@ -3488,6 +3621,23 @@
       });
       document.getElementById("currencyINR").addEventListener("click", function() {
         setCurrency("INR");
+      });
+
+      // Dark Mode Toggle
+      var currentTheme = localStorage.getItem("seatswap_theme") || "light";
+
+      function setTheme(theme) {
+        currentTheme = theme;
+        localStorage.setItem("seatswap_theme", theme);
+        document.documentElement.setAttribute("data-theme", theme);
+      }
+
+      // Initialize theme on load
+      setTheme(currentTheme);
+
+      // Bind theme toggle button
+      document.getElementById("themeToggle").addEventListener("click", function() {
+        setTheme(currentTheme === "light" ? "dark" : "light");
       });
     });
 
