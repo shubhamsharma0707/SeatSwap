@@ -19,6 +19,38 @@
       --ease:    cubic-bezier(.22,.61,.36,1);
       --pill-bg: #0a0908;
       --pill-fg: #ffffff;
+      --veil-gradient-1: rgba(242,240,236,.62);
+      --veil-gradient-2: rgba(242,240,236,.12);
+      --veil-gradient-3: rgba(242,240,236,.66);
+      --veil-radial-1: rgba(242,240,236,0);
+      --veil-radial-2: rgba(242,240,236,.34);
+      --veil-bg: rgba(242,240,236,.20);
+      --logo-bg: rgba(255,255,255,.92);
+      --logo-shadow: rgba(13,12,11,.08);
+      --chrome-gradient-1: rgba(242,240,236,.94);
+      --chrome-gradient-2: rgba(242,240,236,.78);
+      --toggle-bg: rgba(13,12,11,.06);
+    }
+
+    [data-theme="dark"] {
+      --fg:      #f2f0ec;
+      --fg-soft: rgba(242,240,236,.64);
+      --fg-faint:rgba(242,240,236,.42);
+      --shade:   #0d0c0b;
+      --rule:    rgba(242,240,236,.16);
+      --pill-bg: #f2f0ec;
+      --pill-fg: #0a0908;
+      --veil-gradient-1: rgba(13,12,11,.62);
+      --veil-gradient-2: rgba(13,12,11,.12);
+      --veil-gradient-3: rgba(13,12,11,.66);
+      --veil-radial-1: rgba(13,12,11,0);
+      --veil-radial-2: rgba(13,12,11,.34);
+      --veil-bg: rgba(13,12,11,.20);
+      --logo-bg: rgba(13,12,11,.92);
+      --logo-shadow: rgba(242,240,236,.08);
+      --chrome-gradient-1: rgba(13,12,11,.94);
+      --chrome-gradient-2: rgba(13,12,11,.78);
+      --toggle-bg: rgba(242,240,236,.06);
     }
 
     /* ─── Reset ─────────────────────────────────────────────────────────────── */
@@ -62,40 +94,63 @@
       transform-origin: 0 50%;
     }
 
-    /* ─── Fixed Background Video Stage ─────────────────────────────────────── */
+    /* ─── Fixed Background Logo Stage ─────────────────────────────────────── */
     .stage {
       position: fixed;
       inset: 0;
       z-index: 0;
       overflow: hidden;
       background: var(--shade);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .stage video {
+    .logo-orbit {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100%;
-      height: 100%;
-      transform: translate(-50%,-50%) scale(1.02);
-      object-fit: cover;
-      filter: contrast(1.02);
+      width: clamp(400px, 50vw, 700px);
+      height: clamp(400px, 50vw, 700px);
       will-change: transform;
     }
 
-    /* Three-layer veil — footage is high-key white so this is a deliberately
-       light wash, heavier at top/bottom edges where nav and footer sit */
+    .logo-item {
+      position: absolute;
+      width: clamp(48px, 6vw, 80px);
+      height: clamp(48px, 6vw, 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--logo-bg);
+      border-radius: 14px;
+      box-shadow: 0 2px 12px var(--logo-shadow), 0 8px 32px var(--logo-shadow);
+      border: 1px solid var(--logo-shadow);
+      transition: transform .3s var(--ease);
+    }
+
+    .logo-item:hover {
+      transform: scale(1.15);
+      box-shadow: 0 4px 16px var(--logo-shadow), 0 12px 40px var(--logo-shadow);
+    }
+
+    .logo-item img,
+    .logo-item svg {
+      width: 70%;
+      height: 70%;
+      object-fit: contain;
+    }
+
+    /* Three-layer veil — same aesthetic as video version */
     .veil {
       position: absolute;
       inset: 0;
       pointer-events: none;
       background:
-        linear-gradient(to bottom, rgba(242,240,236,.62) 0%, rgba(242,240,236,.12) 22%, rgba(242,240,236,.12) 78%, rgba(242,240,236,.66) 100%),
-        radial-gradient(100% 80% at 50% 48%, rgba(242,240,236,0) 0%, rgba(242,240,236,.34) 100%),
-        rgba(242,240,236,.20);
+        linear-gradient(to bottom, var(--veil-gradient-1) 0%, var(--veil-gradient-2) 22%, var(--veil-gradient-2) 78%, var(--veil-gradient-3) 100%),
+        radial-gradient(100% 80% at 50% 48%, var(--veil-radial-1) 0%, var(--veil-radial-2) 100%),
+        var(--veil-bg);
     }
 
-    /* Fine SVG turbulence noise so the flat wash doesn't band */
+    /* Fine SVG turbulence noise */
     .grain {
       position: absolute;
       inset: -50%;
@@ -128,7 +183,7 @@
       justify-content: space-between;
       gap: 12px;
       padding: max(14px, calc(env(safe-area-inset-top, 0px) + 12px)) clamp(16px, 3.4vw, 44px) 14px;
-      background: linear-gradient(to bottom, rgba(242,240,236,.94) 0%, rgba(242,240,236,.78) 72%, rgba(242,240,236,0) 100%);
+      background: linear-gradient(to bottom, var(--chrome-gradient-1) 0%, var(--chrome-gradient-2) 72%, rgba(242,240,236,0) 100%);
     }
 
     .mark {
@@ -164,7 +219,7 @@
       display: flex;
       align-items: center;
       gap: 0;
-      background: rgba(13,12,11,.06);
+      background: var(--toggle-bg);
       border-radius: 999px;
       padding: 3px;
       border: 1px solid var(--rule);
@@ -190,6 +245,40 @@
     .currency-toggle button:hover:not(.active) {
       color: var(--fg);
     }
+
+    /* Dark Mode Toggle */
+    .theme-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 999px;
+      background: var(--toggle-bg);
+      border: 1px solid var(--rule);
+      cursor: pointer;
+      transition: all .25s var(--ease);
+      padding: 0;
+      color: var(--fg);
+    }
+    .theme-toggle:hover {
+      background: var(--fg);
+      color: var(--shade);
+    }
+    .theme-toggle svg {
+      width: 20px;
+      height: 20px;
+      transition: transform .3s var(--ease);
+    }
+    .theme-toggle:hover svg {
+      transform: rotate(20deg);
+    }
+    [data-theme="dark"] .theme-toggle .sun-icon { display: block; }
+    [data-theme="dark"] .theme-toggle .moon-icon { display: none; }
+    [data-theme="light"] .theme-toggle .sun-icon,
+    :root:not([data-theme]) .theme-toggle .sun-icon { display: none; }
+    [data-theme="light"] .theme-toggle .moon-icon,
+    :root:not([data-theme]) .theme-toggle .moon-icon { display: block; }
 
     .pill {
       display: inline-flex;
@@ -311,9 +400,9 @@
     @media (max-width: 900px) {
       .veil {
         background:
-          linear-gradient(to bottom, rgba(242,240,236,.72) 0%, rgba(242,240,236,.18) 24%, rgba(242,240,236,.18) 76%, rgba(242,240,236,.74) 100%),
-          radial-gradient(100% 80% at 50% 48%, rgba(242,240,236,0) 0%, rgba(242,240,236,.40) 100%),
-          rgba(242,240,236,.24);
+          linear-gradient(to bottom, var(--veil-gradient-1) 0%, var(--veil-gradient-2) 24%, var(--veil-gradient-2) 76%, var(--veil-gradient-3) 100%),
+          radial-gradient(100% 80% at 50% 48%, var(--veil-radial-1) 0%, var(--veil-radial-2) 100%),
+          var(--veil-bg);
       }
     }
 
@@ -321,6 +410,8 @@
       .nav a:not(.pill) { display: none; }
       .mark             { font-size: 14px; }
       .nav .pill        { height: 38px; padding: 0 16px; font-size: 13.5px; }
+      .theme-toggle     { width: 38px; height: 38px; }
+      .theme-toggle svg { width: 18px; height: 18px; }
       h1                { max-width: 12ch; font-size: clamp(30px, 9.8vw, 52px); }
       .sub              { font-size: 15px; max-width: 34ch; }
       .panel {
@@ -335,6 +426,8 @@
     @media (max-width: 420px) {
       .mark-star { display: none; }
       .nav .pill { height: 36px; padding: 0 14px; font-size: 13px; }
+      .theme-toggle { width: 36px; height: 36px; }
+      .theme-toggle svg { width: 16px; height: 16px; }
       h1         { max-width: 11ch; font-size: clamp(28px, 10.5vw, 40px); }
       .eyebrow   { font-size: 11px; letter-spacing: .04em; max-width: 28ch; }
       .cta .pill { width: 100%; max-width: 280px; height: 44px; padding: 0 20px; font-size: 14px; }
@@ -361,9 +454,9 @@
     <p id="bootPct">LOADING 0%</p>
   </div>
 
-  <!-- Fixed full-screen video stage; JS sets .src so no premature request -->
+  <!-- Fixed full-screen logo orbit stage -->
   <div class="stage">
-    <video id="clip" muted playsinline preload="auto" disablepictureinpicture></video>
+    <div class="logo-orbit" id="logoOrbit"></div>
     <div class="veil"></div>
     <div class="grain"></div>
   </div>
@@ -383,6 +476,14 @@
         <button id="currencyUSD" class="active">USD</button>
         <button id="currencyINR">INR</button>
       </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+        </svg>
+        <svg class="moon-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+      </button>
       <a href="dashboard.html" class="pill">Browse seats</a>
     </nav>
   </header>
@@ -432,14 +533,62 @@
   (function(){ "use strict";
 
     /*
-     * VIDEO — 1920×1080, 10.04 s, 241 frames, all-intra H.264 MP4.
-     * Every frame is a keyframe, so seeking to any timestamp is instant —
-     * no keyframe-hunting lag.
+     * LOGO ORBIT — Software logos arranged in a circle, rotating on scroll
+     * Using inline SVG for reliability and proper rendering
      */
-    var VIDEO_URL = "https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/45567745-d826-44a2-a5ce-7ef670944e60.mp4";
+    var LOGOS = [
+      {
+        name: "ChatGPT",
+        svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M22.2819 9.8211C23.5901 9.8211 24.6522 8.75888 24.6522 7.45063C24.6522 6.14237 23.5901 5.08016 22.2819 5.08016C20.9736 5.08016 19.9115 6.14237 19.9115 7.45063C19.9115 8.75888 20.9736 9.8211 22.2819 9.8211Z" fill="#10A37F"/><path d="M22.2819 18.8779C23.5901 18.8779 24.6522 17.8157 24.6522 16.5074C24.6522 15.1992 23.5901 14.137 22.2819 14.137C20.9736 14.137 19.9115 15.1992 19.9115 16.5074C19.9115 17.8157 20.9736 18.8779 22.2819 18.8779Z" fill="#10A37F"/><path d="M13.2252 24C14.5334 24 15.5956 22.9378 15.5956 21.6295C15.5956 20.3213 14.5334 19.2591 13.2252 19.2591C11.9169 19.2591 10.8547 20.3213 10.8547 21.6295C10.8547 22.9378 11.9169 24 13.2252 24Z" fill="#10A37F"/></svg>'
+      },
+      {
+        name: "Figma",
+        svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M8 24C10.2091 24 12 22.2091 12 20V16H8C5.79086 16 4 17.7909 4 20C4 22.2091 5.79086 24 8 24Z" fill="#0ACF83"/><path d="M4 12C4 9.79086 5.79086 8 8 8H12V16H8C5.79086 16 4 14.2091 4 12Z" fill="#A259FF"/><path d="M4 4C4 1.79086 5.79086 0 8 0H12V8H8C5.79086 8 4 6.20914 4 4Z" fill="#F24E1E"/><path d="M12 0H16C18.2091 0 20 1.79086 20 4C20 6.20914 18.2091 8 16 8H12V0Z" fill="#FF7262"/><path d="M20 12C20 14.2091 18.2091 16 16 16C13.7909 16 12 14.2091 12 12C12 9.79086 13.7909 8 16 8C18.2091 8 20 9.79086 20 12Z" fill="#1ABCFE"/></svg>'
+      },
+      {
+        name: "Adobe",
+        svg: '<svg viewBox="0 0 24 24" fill="#FF0000"><path d="M13.966 22.624l-1.69-4.281H8.122l3.892-9.144 5.662 13.425zM8.884 1.376H0v21.248zm15.116 0h-8.884L24 22.624z"/></svg>'
+      },
+      {
+        name: "Notion",
+        svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.981-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.167V6.354c0-.606-.233-.933-.748-.887l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952L12.21 19s0 .84-1.168.84l-3.222.186c-.093-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.139c-.093-.514.28-.887.747-.933zM1.936 1.035l13.31-.98c1.634-.14 2.055-.047 3.082.7l4.249 2.986c.7.513.934.653.934 1.213v16.378c0 1.026-.373 1.634-1.68 1.726l-15.458.934c-.98.047-1.448-.093-1.962-.747l-3.129-4.06c-.56-.747-.793-1.306-.793-1.96V2.667c0-.839.374-1.54 1.447-1.632z" fill="#000"/></svg>'
+      },
+      {
+        name: "Slack",
+        svg: '<svg viewBox="0 0 24 24" fill="none"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313z" fill="#E01E5A"/><path d="M8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312z" fill="#36C5F0"/><path d="M18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312z" fill="#2EB67D"/><path d="M15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z" fill="#ECB22E"/></svg>'
+      },
+      {
+        name: "GitHub",
+        svg: '<svg viewBox="0 0 24 24" fill="#181717"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>'
+      },
+      {
+        name: "Linear",
+        svg: '<svg viewBox="0 0 24 24" fill="#5E6AD2"><path d="M2.5 2.5A2.5 2.5 0 0 0 0 5v14a2.5 2.5 0 0 0 2.5 2.5h19A2.5 2.5 0 0 0 24 19V5a2.5 2.5 0 0 0-2.5-2.5h-19zm14.73 4.86l-7.34 14.35a.25.25 0 0 0 .44.23l7.42-14.5a.25.25 0 0 0-.52-.08zM6.5 17a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5zm5.5 1a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 1 0v11a.5.5 0 0 1-.5.5zm5.5-2a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 1 0v9a.5.5 0 0 1-.5.5z"/></svg>'
+      },
+      {
+        name: "Canva",
+        svg: '<svg viewBox="0 0 24 24" fill="#00C4CC"><path d="M8.085 8.058c-.388.126-.713.369-.962.685.04-.662.183-1.458.462-2.195.408-1.073 1.057-1.943 2.144-2.144 1.545-.286 2.747.654 2.747.654s-1.66.596-2.413 1.662c-.516.732-.606 1.591-.606 1.591s-.278-.38-.662-.38c-.265 0-.483.091-.71.127zm3.423.424c.37-.003.71.04 1.025.127 2.303.636 2.763 3.382 1.827 5.254-.894 1.789-3.146 2.614-5.055 1.827-1.625-.669-2.485-2.326-2.033-4.022.382-1.432 1.545-2.523 3.04-2.932.417-.114.842-.184 1.196-.254zm-2.397 2.524c-.346.832-.03 1.748.713 2.13.743.382 1.66.09 2.033-.654.373-.743.09-1.66-.654-2.033-.743-.373-1.69-.127-2.092.557z"/></svg>'
+      },
+      {
+        name: "Grammarly",
+        svg: '<svg viewBox="0 0 24 24" fill="#15C39A"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.413 12.29c0 1.266-.322 2.425-.934 3.477-.612 1.051-1.502 1.898-2.67 2.54-1.168.643-2.54.965-4.116.965-1.577 0-2.95-.322-4.117-.965-1.168-.642-2.058-1.489-2.67-2.54-.613-1.052-.919-2.211-.919-3.477v-.58c0-1.266.306-2.425.919-3.477.612-1.051 1.502-1.898 2.67-2.54C9.744 4.05 11.116 3.728 12.693 3.728c1.576 0 2.948.322 4.116.965 1.168.642 2.058 1.489 2.67 2.54.612 1.052.934 2.211.934 3.477v.58zM12 6.25c-2.9 0-5.25 2.35-5.25 5.25s2.35 5.25 5.25 5.25 5.25-2.35 5.25-5.25S14.9 6.25 12 6.25zm0 9c-2.071 0-3.75-1.679-3.75-3.75S9.929 8 12 8s3.75 1.679 3.75 3.75-1.679 3.75-3.75 3.75z"/></svg>'
+      },
+      {
+        name: "Miro",
+        svg: '<svg viewBox="0 0 24 24" fill="#FFD02F"><path d="M17.392 0H13.9L17 4.808 10.444 0H6.949l3.102 6.3L3.494 0H0l3.05 8.131L0 24h3.494L10.05 8.385 6.949 24h3.494L17 7.58 13.899 24h3.493L24 0z"/></svg>'
+      },
+      {
+        name: "Asana",
+        svg: '<svg viewBox="0 0 24 24" fill="#F06A6A"><path d="M12 0C9.264 0 7 2.264 7 5s2.264 5 5 5 5-2.264 5-5-2.264-5-5-5zM4.5 14C1.764 14 0 16.264 0 19s1.764 5 4.5 5S9 21.736 9 19s-2.264-5-4.5-5zm15 0c-2.736 0-4.5 2.264-4.5 5s1.764 5 4.5 5S24 21.736 24 19s-2.264-5-4.5-5z"/></svg>'
+      },
+      {
+        name: "Midjourney",
+        svg: '<svg viewBox="0 0 24 24" fill="#000"><path d="M0 12.5V7l5 2.5v10L0 17zm7.143 7.5v-15L12 2.5l4.857 2.5v15L12 22.5z"/></svg>'
+      }
+    ];
 
     /* ── DOM refs ────────────────────────────────────────────────────────────── */
-    var clip    = document.getElementById("clip");
+    var logoOrbit = document.getElementById("logoOrbit");
     var boot    = document.getElementById("boot");
     var bootBar = document.getElementById("bootBar");
     var bootPct = document.getElementById("bootPct");
@@ -449,14 +598,6 @@
     /*
      * Cue table — each entry is [fadeInStart, fadeInEnd, fadeOutStart, fadeOutEnd]
      * expressed as 0..1 fractions of total page scroll.
-     *
-     * Gaps between one panel's fadeOutEnd and the next's fadeInStart are
-     * deliberate dead zones where only the video plays — this guarantees
-     * two panels are never simultaneously readable.
-     *
-     *   Panel 1: 0.00 → 0.23   │ dead zone 0.23 → 0.35
-     *   Panel 2: 0.35 → 0.65   │ dead zone 0.65 → 0.77
-     *   Panel 3: 0.77 → 1.20+  │ (extends past 1.0 so it stays up at bottom)
      */
     var CUES = [
       [0.00, 0.00, 0.15, 0.23],
@@ -475,21 +616,48 @@
 
     /* ── State ───────────────────────────────────────────────────────────────── */
     var progress = 0;  // 0..1 scroll position
-    var seekTo   = 0;  // target video time (seconds)
-    var seekAt   = 0;  // current eased video time
-    var duration = 0;  // populated once loadedmetadata fires
+    var rotation = 0;  // logo orbit rotation in degrees
     var ready    = false;
+
+    /* ── Create Logo Elements ────────────────────────────────────────────────── */
+    function createLogos() {
+      var radius = 50; // percentage of container
+      var count = LOGOS.length;
+
+      for (var i = 0; i < count; i++) {
+        var angle = (i / count) * 360;
+        var rad = (angle * Math.PI) / 180;
+        var x = 50 + radius * Math.cos(rad);
+        var y = 50 + radius * Math.sin(rad);
+
+        var logoItem = document.createElement("div");
+        logoItem.className = "logo-item";
+        logoItem.style.left = x + "%";
+        logoItem.style.top = y + "%";
+        logoItem.style.transform = "translate(-50%, -50%)";
+        logoItem.title = LOGOS[i].name;
+
+        // Insert inline SVG directly
+        logoItem.innerHTML = LOGOS[i].svg;
+
+        logoOrbit.appendChild(logoItem);
+      }
+    }
 
     /* ── readScroll ──────────────────────────────────────────────────────────── */
     function readScroll() {
       var max = document.documentElement.scrollHeight - window.innerHeight;
       progress = max > 0 ? clamp(window.pageYOffset / max, 0, 1) : 0;
-      if (duration) seekTo = progress * duration;
+      // Rotate 360 degrees over full scroll range (can adjust multiplier for more/less rotation)
+      rotation = progress * 360 * 2; // 2 full rotations over page scroll
     }
 
     /* ── paint — every rAF tick ──────────────────────────────────────────────── */
     function paint() {
       meter.style.transform = "scaleX(" + progress + ")";
+
+      // Rotate logo orbit based on scroll
+      logoOrbit.style.transform = "rotate(" + rotation + "deg)";
 
       for (var i = 0; i < panels.length; i++) {
         var el    = panels[i];
@@ -506,20 +674,9 @@
 
     /* ── frame — rAF loop, never cancelled ───────────────────────────────────── */
     function frame() {
-      if (ready && duration) {
-        var gap = seekTo - seekAt;
-        if (Math.abs(gap) > 0.0008) {
-          seekAt += gap * 0.115; // easing factor — do not change
-          if (clip.readyState >= 2 && !clip.seeking) {
-            try { clip.currentTime = seekAt; } catch (e) {}
-          }
-        }
-      }
       paint();
       requestAnimationFrame(frame);
     }
-    /* The easing of currentTime toward the scroll target (rather than snapping)
-       is what turns a jumpy scrub into a smooth one. */
 
     /* ── Boot / loading ──────────────────────────────────────────────────────── */
     function setProgress(f) {
@@ -527,107 +684,27 @@
       bootPct.textContent = "LOADING " + Math.round(f * 100) + "%";
     }
 
-    var started = false;
     function start() {
-      if (started) return;
-      started = true;
       ready = true;
       boot.classList.add("done");
       readScroll();
-      seekAt = seekTo;
     }
 
-    var attached = false;
-    function attach(src) {
-      if (attached) return;
-      attached = true;
+    /* ── Initialize ──────────────────────────────────────────────────────────── */
+    function init() {
+      createLogos();
 
-      clip.addEventListener("loadedmetadata", function() {
-        duration = clip.duration || 0;
-        clip.pause();
-        readScroll();
-        seekAt = seekTo;
-        try { clip.currentTime = seekAt; } catch (e) {}
-      });
-      clip.addEventListener("loadeddata",     function() { start(); });
-      clip.addEventListener("canplaythrough", function() { start(); });
-      clip.addEventListener("error",          function() { start(); });
-
-      clip.src = src;
-      clip.load();
-
-      // Safety net: if decode stalls for 12 s, dismiss the preloader anyway
-      setTimeout(start, 12000);
+      // Simulate loading for smooth transition
+      var loadProgress = 0;
+      var loadInterval = setInterval(function() {
+        loadProgress += 0.05;
+        setProgress(loadProgress);
+        if (loadProgress >= 1) {
+          clearInterval(loadInterval);
+          setTimeout(start, 300);
+        }
+      }, 30);
     }
-
-    /*
-     * preload() — fetch the entire MP4 into a Blob before attaching.
-     *
-     * WHY BLOB vs. RANGE REQUESTS: seeking inside a fully-buffered Blob is
-     * sub-millisecond. Seeking against a live range-request stream forces the
-     * browser to issue a new HTTP range request on every seek, adding 50–300 ms
-     * latency that destroys the frame-by-frame scrub illusion.
-     *
-     * If the fetch fails or stalls past the 15 s bail timer, we fall back to
-     * direct streaming so the page is never permanently broken.
-     */
-    function preload() {
-      var ctrl = typeof AbortController !== "undefined" ? new AbortController() : null;
-
-      var bail = setTimeout(function() {
-        if (attached) return;
-        if (ctrl) ctrl.abort();
-        setProgress(1);
-        attach(VIDEO_URL);
-      }, 15000);
-
-      fetch(VIDEO_URL, ctrl ? { signal: ctrl.signal } : {})
-        .then(function(res) {
-          if (!res.ok || !res.body) throw new Error("bad response");
-          var total  = parseInt(res.headers.get("content-length") || "0", 10);
-          var got    = 0;
-          var chunks = [];
-          var reader = res.body.getReader();
-
-          function pump() {
-            return reader.read().then(function(r) {
-              if (r.done) {
-                return new Blob(chunks, { type: "video/mp4" });
-              }
-              chunks.push(r.value);
-              got += r.value.byteLength;
-              // 11e6 ≈ approximate byte size when Content-Length header is absent
-              setProgress(total ? got / total : Math.min(got / 11e6, 0.95));
-              return pump();
-            });
-          }
-          return pump();
-        })
-        .then(function(blob) {
-          clearTimeout(bail);
-          setProgress(1);
-          attach(URL.createObjectURL(blob));
-        })
-        .catch(function() {
-          clearTimeout(bail);
-          setProgress(1);
-          attach(VIDEO_URL); // CORS failure, abort, or offline — stream directly
-        });
-    }
-
-    /*
-     * iOS unlock — iOS will not render any video frame from an element that
-     * has never been played. We nudge play() on the first user gesture then
-     * immediately pause, which unlocks frame painting without visible playback.
-     */
-    function unlock() {
-      var p = clip.play();
-      if (p && p.then) p.then(function() { clip.pause(); }).catch(function() {});
-      else clip.pause();
-    }
-    ["touchstart","pointerdown","wheel","keydown"].forEach(function(ev) {
-      window.addEventListener(ev, unlock, { once: true, passive: true });
-    });
 
     /* ── Currency Toggle ─────────────────────────────────────────────────────── */
     var USD_TO_INR = 83;
@@ -671,13 +748,30 @@
       setCurrency("INR");
     });
 
+    /* ── Dark Mode Toggle ────────────────────────────────────────────────────── */
+    var currentTheme = localStorage.getItem("seatswap_theme") || "light";
+
+    function setTheme(theme) {
+      currentTheme = theme;
+      localStorage.setItem("seatswap_theme", theme);
+      document.documentElement.setAttribute("data-theme", theme);
+    }
+
+    // Initialize theme on load
+    setTheme(currentTheme);
+
+    // Bind toggle button
+    document.getElementById("themeToggle").addEventListener("click", function() {
+      setTheme(currentTheme === "light" ? "dark" : "light");
+    });
+
     /* ── Wire up (in this order) ─────────────────────────────────────────────── */
     window.addEventListener("scroll", readScroll, { passive: true });
     window.addEventListener("resize", readScroll);
 
     readScroll();
     paint();
-    preload();
+    init();
     requestAnimationFrame(frame);
 
   })();
