@@ -67,7 +67,8 @@ const ResetPassword: React.FC = () => {
             <div className="text-center mb-12 animate-fade-rise">
               <div className="w-16 h-16 rounded-full bg-foreground/10 flex items-center justify-center mx-auto mb-6">
                 <svg
-                  className="w-8 h-8 text-foreground"
+                  className="w-8 h-8"
+                  style={{ color: '#ffffff' }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -82,12 +83,12 @@ const ResetPassword: React.FC = () => {
               </div>
               <h1
                 className="text-5xl md:text-6xl leading-[0.95] tracking-[-2.46px] mb-4"
-                style={{ fontFamily: "'Instrument Serif', serif" }}
+                style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
               >
-                Check your <em className="not-italic text-muted-foreground">inbox</em>
+                Check your <em className="not-italic" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>inbox</em>
               </h1>
-              <p className="text-muted-foreground text-base mt-6 max-w-md mx-auto">
-                We've sent a password reset link to <span className="text-foreground">{formData.email}</span>.
+              <p className="text-base mt-6 max-w-md mx-auto" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                We've sent a password reset link to <span style={{ color: '#ffffff' }}>{formData.email}</span>.
                 Please check your email and follow the instructions.
               </p>
             </div>
@@ -95,7 +96,7 @@ const ResetPassword: React.FC = () => {
             {/* Info Card */}
             <div className="liquid-glass rounded-3xl p-8 animate-fade-rise-delay">
               <div className="space-y-4 text-center">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
                   Didn't receive the email? Check your spam folder or request a new one.
                 </p>
 
@@ -110,7 +111,8 @@ const ResetPassword: React.FC = () => {
 
                 <Link
                   to="/login"
-                  className="block text-sm text-foreground hover:text-muted-foreground transition-colors mt-4"
+                  className="block text-sm transition-colors mt-4 hover:opacity-70"
+                  style={{ color: '#ffffff' }}
                 >
                   Back to Sign In
                 </Link>
@@ -118,7 +120,7 @@ const ResetPassword: React.FC = () => {
             </div>
 
             {/* Footer Note */}
-            <p className="text-center text-xs text-muted-foreground mt-8 animate-fade-rise-delay-2">
+            <p className="text-center text-xs mt-8 animate-fade-rise-delay-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
               The link will expire in 1 hour for security reasons
             </p>
           </div>
@@ -135,11 +137,11 @@ const ResetPassword: React.FC = () => {
           <div className="text-center mb-12 animate-fade-rise">
             <h1
               className="text-5xl md:text-6xl leading-[0.95] tracking-[-2.46px] mb-4"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
+              style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
             >
-              Reset your <em className="not-italic text-muted-foreground">password</em>
+              Reset your <em className="not-italic" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>password</em>
             </h1>
-            <p className="text-muted-foreground text-base mt-6">
+            <p className="text-base mt-6" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
               Enter your email and we'll send you a link to reset your password
             </p>
           </div>
@@ -179,7 +181,7 @@ const ResetPassword: React.FC = () => {
                   <div className="w-full border-t border-input"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-muted/30 text-muted-foreground">
+                  <span className="px-4 bg-muted/30" style={{ color: '#ffffff' }}>
                     Remember your password?
                   </span>
                 </div>
@@ -188,7 +190,8 @@ const ResetPassword: React.FC = () => {
               {/* Back to Login Link */}
               <Link
                 to="/login"
-                className="block text-center text-sm text-foreground hover:text-muted-foreground transition-colors"
+                className="block text-center text-sm transition-colors hover:opacity-70"
+                style={{ color: '#ffffff' }}
               >
                 Back to Sign In
               </Link>
@@ -196,7 +199,7 @@ const ResetPassword: React.FC = () => {
           </div>
 
           {/* Security Note */}
-          <p className="text-center text-xs text-muted-foreground mt-8 animate-fade-rise-delay-2">
+          <p className="text-center text-xs mt-8 animate-fade-rise-delay-2" style={{ color: 'rgba(255, 255, 255, 0.7)' }}>
             For security, we'll never confirm if an email is registered
           </p>
         </div>
