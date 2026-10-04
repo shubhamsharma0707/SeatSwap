@@ -4,6 +4,7 @@ import AuthLayout from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
+import { apiPost } from '@/lib/api'
 
 interface FormData {
   email: string
@@ -49,13 +50,15 @@ const ResetPassword: React.FC = () => {
     if (!validateForm()) return
 
     setIsLoading(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
+    setErrors({})
+    try {
+      await apiPost('/api/v1/auth/password-reset', { email: formData.email })
       setIsSubmitted(true)
-      console.log('Reset password for:', formData.email)
-    }, 1500)
+    } catch (error) {
+      setErrors({ email: error instanceof Error ? error.message : 'The request could not be completed.' })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   if (isSubmitted) {
@@ -88,8 +91,7 @@ const ResetPassword: React.FC = () => {
                 Check your <em className="not-italic" style={{ color: 'rgba(255, 255, 255, 0.6)' }}>inbox</em>
               </h1>
               <p className="text-base mt-6 max-w-md mx-auto" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
-                We've sent a password reset link to <span style={{ color: '#ffffff' }}>{formData.email}</span>.
-                Please check your email and follow the instructions.
+                If an account exists for <span style={{ color: '#ffffff' }}>{formData.email}</span>, we'll send a password reset link. Please check your email and follow the instructions.
               </p>
             </div>
 
