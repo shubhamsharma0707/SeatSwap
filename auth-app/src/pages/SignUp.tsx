@@ -4,6 +4,7 @@ import AuthLayout from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
+import { apiPost } from '@/lib/api'
 
 interface FormData {
   fullName: string
@@ -28,6 +29,8 @@ const SignUp: React.FC = () => {
   })
   const [errors, setErrors] = useState<FormErrors>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [notice, setNotice] = useState('')
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}
@@ -44,8 +47,8 @@ const SignUp: React.FC = () => {
 
     if (!formData.password) {
       newErrors.password = 'Password is required'
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters'
+    } else if (formData.password.length < 12) {
+      newErrors.password = 'Password must be at least 12 characters'
     }
 
     if (!formData.confirmPassword) {
@@ -73,32 +76,45 @@ const SignUp: React.FC = () => {
     if (!validateForm()) return
 
     setIsLoading(true)
-
-    // Simulate API call - Replace this with real API call
-    setTimeout(() => {
-      setIsLoading(false)
-      console.log('Sign up data:', formData)
-
-      // Save authentication data (auto-login after signup)
-      const mockToken = 'mock_jwt_token_' + Date.now()
-      const userData = {
-        email: formData.email,
+    try {
+      await apiPost('/api/v1/auth/signup', {
         fullName: formData.fullName,
-        id: 'user_' + Date.now()
-      }
+        email: formData.email,
+        password: formData.password,
+      })
+      localStorage.removeItem('seatswap_auth_token')
+      localStorage.removeItem('seatswap_user_data')
+      sessionStorage.removeItem('seatswap_redirect_after_login')
+      setSubmitted(true)
+    } catch (error) {
+      setErrors({ email: error instanceof Error ? error.message : 'Account creation failed. Please try again.' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
-      localStorage.setItem('seatswap_auth_token', mockToken)
-      localStorage.setItem('seatswap_user_data', JSON.stringify(userData))
+  const resendVerification = async () => {
+    setNotice('')
+    try {
+      const result = await apiPost<{ message: string }>('/api/v1/auth/email-verification', { email: formData.email })
+      setNotice(result.message)
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : 'Email delivery is temporarily unavailable.')
+    }
+  }
 
-      // Redirect to dashboard after successful signup
-      const redirectPath = sessionStorage.getItem('seatswap_redirect_after_login')
-      if (redirectPath) {
-        sessionStorage.removeItem('seatswap_redirect_after_login')
-        window.location.href = redirectPath.startsWith('/') ? redirectPath : '/' + redirectPath
-      } else {
-        window.location.href = '/dashboard.html'
-      }
-    }, 1500)
+  if (submitted) {
+    return (
+      <AuthLayout>
+        <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center px-6 text-center text-white">
+          <h1 className="mb-4 text-4xl" style={{ fontFamily: "'Instrument Serif', serif" }}>Check your inbox</h1>
+          <p className="mb-3">If the address is eligible, a verification link has been sent to <strong>{formData.email}</strong>.</p>
+          <p role="status" className="mb-6 text-sm">{notice}</p>
+          <button type="button" className="mb-6 text-sm underline" onClick={resendVerification}>Resend verification email</button>
+          <Link className="text-sm underline" to="/login">Back to sign in</Link>
+        </div>
+      </AuthLayout>
+    )
   }
 
   return (
@@ -158,7 +174,7 @@ const SignUp: React.FC = () => {
                   id="password"
                   name="password"
                   type="password"
-                  placeholder="Min. 8 characters"
+                  placeholder="Min. 12 characters"
                   value={formData.password}
                   onChange={handleChange}
                   error={errors.password}
