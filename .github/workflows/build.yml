@@ -1,0 +1,79 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: seatswap
+          POSTGRES_PASSWORD: local-build-only
+          POSTGRES_DB: seatswap
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U seatswap -d seatswap"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql://seatswap:local-build-only@127.0.0.1:5432/seatswap?schema=public
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npx prisma validate
+      - run: npm run db:migrate
+      - run: npm run build
+
+  auth-ui:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: auth-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: auth-app/package-lock.json
+      - run: npm ci
+      - run: npm run build
+
+  static-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node --check server.js
+      - run: node --check js/integration.js
+
+  backend-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: false
+          tags: seatswap-api:ci
