@@ -1,6 +1,9 @@
 # Node & Dependencies
 node_modules/
 auth-app/node_modules/
+auth-app/dist-preview/
+vercel-preview/
+.vercel/
 .pnp
 .pnp.js
 
@@ -38,3 +41,4 @@ test_landing.js
 test_suite.js
 update_index.js
 update_index_body.js
+.vercel
