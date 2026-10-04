@@ -39,6 +39,7 @@ for (const file of ['index.html', 'dashboard.html']) {
 }
 
 copyFile(path.join(projectRoot, 'js/integration.js'), path.join(outputRoot, 'js/integration.js'))
+copyFile(path.join(projectRoot, 'styles/design-system.css'), path.join(outputRoot, 'styles/design-system.css'))
 fs.writeFileSync(
   path.join(outputRoot, 'js/preview-mode.js'),
   'window.SEATSWAP_FRONTEND_PREVIEW = true;\n',
