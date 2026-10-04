@@ -4,6 +4,7 @@ import AuthLayout from '@/components/layout/AuthLayout'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
+import { apiPost, getSafeRedirectPath } from '@/lib/api'
 
 interface FormData {
   email: string
@@ -56,32 +57,16 @@ const Login: React.FC = () => {
     if (!validateForm()) return
 
     setIsLoading(true)
-
-    // Simulate API call - Replace this with real API call
-    setTimeout(() => {
+    try {
+      await apiPost('/api/v1/auth/login', { email: formData.email, password: formData.password, rememberMe })
+      localStorage.removeItem('seatswap_auth_token')
+      localStorage.removeItem('seatswap_user_data')
+      window.location.href = getSafeRedirectPath()
+    } catch (error) {
+      setErrors({ email: error instanceof Error ? error.message : 'Sign in failed. Please try again.' })
+    } finally {
       setIsLoading(false)
-      console.log('Login data:', { ...formData, rememberMe })
-
-      // Save authentication data
-      const mockToken = 'mock_jwt_token_' + Date.now()
-      const userData = {
-        email: formData.email,
-        fullName: formData.email.split('@')[0],
-        id: 'user_' + Date.now()
-      }
-
-      localStorage.setItem('seatswap_auth_token', mockToken)
-      localStorage.setItem('seatswap_user_data', JSON.stringify(userData))
-
-      // Check if there's a redirect path
-      let redirectPath = sessionStorage.getItem('seatswap_redirect_after_login')
-      if (redirectPath) {
-        sessionStorage.removeItem('seatswap_redirect_after_login')
-        window.location.href = redirectPath.startsWith('/') ? redirectPath : '/' + redirectPath
-      } else {
-        window.location.href = '/dashboard.html'
-      }
-    }, 1500)
+    }
   }
 
   return (
