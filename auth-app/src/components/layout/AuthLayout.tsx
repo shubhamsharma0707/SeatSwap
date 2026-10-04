@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Link } from 'react-router-dom'
 
 interface AuthLayoutProps {
@@ -6,38 +6,15 @@ interface AuthLayoutProps {
 }
 
 const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
-  useEffect(() => {
-    // Force dark mode on auth pages
-    document.documentElement.classList.add('dark')
-  }, [])
-
   return (
-    <div className="relative min-h-screen w-full overflow-hidden">
-      {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source
-          src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260314_131748_f2ca2a28-fed7-44c8-b9a9-bd9acdd5ec31.mp4"
-          type="video/mp4"
-        />
-      </video>
-
-      {/* Dark overlay for readability - dark mode only */}
-      <div className="absolute inset-0 bg-black/40 z-[1]" />
-
-      {/* Navigation Bar */}
-      <nav className="relative z-10 flex justify-between items-center px-8 py-6 max-w-7xl mx-auto">
+    <div className="auth-shell relative min-h-dvh w-full overflow-hidden">
+      <nav className="auth-shell__nav relative z-10 flex justify-between items-center px-6 md:px-8 py-5 max-w-7xl mx-auto">
         <a
           href="/index.html"
-          className="text-3xl tracking-tight"
-          style={{ fontFamily: "'Instrument Serif', serif", color: '#ffffff' }}
+          className="ss-brand-link"
+          aria-label="SeatSwap home"
         >
-          SeatSwap<sup className="text-xs">®</sup>
+          SeatSwap
         </a>
 
         <div className="hidden md:flex items-center gap-8">
@@ -62,10 +39,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         </div>
       )}
 
-      {/* Content */}
-      <div className="relative z-10">
+      <main className="auth-shell__main relative z-10">
         {children}
-      </div>
+      </main>
     </div>
   )
 }
