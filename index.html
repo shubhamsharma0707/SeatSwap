@@ -8,14 +8,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/design-system.css">
   <style>
     /* ─── Custom Properties ─────────────────────────────────────────────────── */
     :root {
-      --fg:      #0d0c0b;
-      --fg-soft: rgba(13,12,11,.64);
-      --fg-faint:rgba(13,12,11,.42);
-      --shade:   #f2f0ec;
-      --rule:    rgba(13,12,11,.16);
+      --fg:      var(--ss-ink);
+      --fg-soft: var(--ss-muted);
+      --fg-faint:var(--ss-faint);
+      --shade:   var(--ss-paper);
+      --rule:    var(--ss-line);
       --ease:    cubic-bezier(.22,.61,.36,1);
       --pill-bg: #0a0908;
       --pill-fg: #ffffff;
@@ -487,10 +488,6 @@
       <a href="dashboard.html" class="pill">View examples</a>
     </nav>
   </header>
-
-  <p role="note" style="position:sticky; top:0; z-index:1000; margin:0; padding:10px 18px; text-align:center; background:#fff3cd; color:#594300; font:500 13px/1.4 Inter, sans-serif;">
-    SeatSwap prototype: products, prices, availability, and safeguards are illustrative only. No real offers, software access, or payments are available.
-  </p>
 
   <!-- Three cross-fading panels — opacity/transform driven entirely from rAF -->
   <main class="panels">
