@@ -1,8 +1,10 @@
 # SeatSwap™ Platform Architecture & Product Specification
 **Document Version:** 2.0.0  
-**Status:** Canonical Architectural Blueprint & Technical Implementation Plan  
+**Status:** Product vision and aspirational prototype specification; not a description of implemented functionality.
 **Target Ecosystem:** Web (Desktop, Tablet, Apple Liquid Retina / Ultra-wide ProMotion Displays)  
 **Core Domain:** P2P Micro-Leasing Marketplace for SaaS Team Plan Seats (Figma, Adobe CC, LeetCode, Midjourney, Canva, ChatGPT)
+
+> **Implementation status:** The repository includes a static frontend, a Fastify/PostgreSQL account API, and auth UI wired to local account flows. Local PostgreSQL/Mailpit runtime verification is complete; staging and production are not configured. The catalog remains illustrative; no listings, escrow, payments, invite automation, or access monitoring exist. Some envisioned flows may be prohibited by provider terms or payment-partner policies. See [BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md) for the grounded proposal and feasibility gates.
 
 ---
 
