@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+}
+
+enum ProductReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+enum ListingStatus {
+  DRAFT
+  PENDING_REVIEW
+  ACTIVE
+  PAUSED
+  REMOVED
+}
+
+enum InventoryStatus {
+  AVAILABLE
+  RESERVED
+  LEASED
+  DISABLED
+}
+
+enum LeaseStatus {
+  PENDING_HOST_ACCEPTANCE
+  PENDING_PAYMENT
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  EXPIRED
+  FAILED
+  DISPUTED
+  RESOLVED
+  REFUNDED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  PARTIALLY_REFUNDED
+  REFUNDED
+  DISPUTED
+}
+
+enum AccountTokenPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  SENT
+  FAILED
+  EXPIRED
+}
+
+model User {
+  id                  String       @id @default(uuid()) @db.Uuid
+  email               String       @unique @db.VarChar(320)
+  displayName         String       @map("display_name") @db.VarChar(120)
+  passwordHash        String       @map("password_hash") @db.VarChar(255)
+  status              UserStatus   @default(PENDING_VERIFICATION)
+  emailVerifiedAt     DateTime?    @map("email_verified_at") @db.Timestamptz(6)
+  createdAt           DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  sessions            Session[]
+  accountTokens       AccountToken[]
+  hostedListings      Listing[]    @relation("ListingHost")
+  buyerLeases         Lease[]      @relation("LeaseBuyer")
+  hostLeases          Lease[]      @relation("LeaseHost")
+  auditEvents         AuditEvent[]
+
+  @@map("users")
+}
+
+model Session {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  tokenHash   String    @unique @map("token_hash") @db.Char(64)
+  expiresAt   DateTime  @map("expires_at") @db.Timestamptz(6)
+  lastUsedAt  DateTime? @map("last_used_at") @db.Timestamptz(6)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
+}
+
+model AccountToken {
+  id          String             @id @default(uuid()) @db.Uuid
+  userId      String             @map("user_id") @db.Uuid
+  tokenHash   String             @unique @map("token_hash") @db.Char(64)
+  purpose     AccountTokenPurpose
+  expiresAt   DateTime           @map("expires_at") @db.Timestamptz(6)
+  consumedAt  DateTime?          @map("consumed_at") @db.Timestamptz(6)
+  createdAt   DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, purpose, expiresAt])
+  @@map("account_tokens")
+}
+
+model EmailOutbox {
+  id                String       @id @default(uuid()) @db.Uuid
+  payloadEncrypted  String       @map("payload_encrypted") @db.Text
+  status            OutboxStatus @default(PENDING)
+  attempts          Int          @default(0)
+  manualRetryCount  Int          @default(0) @map("manual_retry_count")
+  availableAt       DateTime     @default(now()) @map("available_at") @db.Timestamptz(6)
+  expiresAt         DateTime     @map("expires_at") @db.Timestamptz(6)
+  lockedAt          DateTime?    @map("locked_at") @db.Timestamptz(6)
+  sentAt            DateTime?    @map("sent_at") @db.Timestamptz(6)
+  lastErrorCode     String?      @map("last_error_code") @db.VarChar(80)
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([status, availableAt])
+  @@index([status, lockedAt])
+  @@index([status, expiresAt])
+  @@map("email_outbox")
+}
+
+model RateLimitCounter {
+  keyHash       String   @id @map("key_hash") @db.Char(64)
+  requestCount  Int      @default(0) @map("request_count")
+  windowEndsAt  DateTime @map("window_ends_at") @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([windowEndsAt])
+  @@map("rate_limit_counters")
+}
+
+model ProviderProduct {
+  id                  String              @id @default(uuid()) @db.Uuid
+  provider            String              @db.VarChar(80)
+  productName         String              @map("product_name") @db.VarChar(120)
+  planName            String              @map("plan_name") @db.VarChar(120)
+  assignmentModel     String              @map("assignment_model") @db.VarChar(80)
+  reviewStatus        ProductReviewStatus @default(PENDING) @map("review_status")
+  evidenceUrl         String?             @map("evidence_url") @db.Text
+  reviewedBy          String?             @map("reviewed_by") @db.VarChar(120)
+  reviewedAt          DateTime?           @map("reviewed_at") @db.Timestamptz(6)
+  reviewExpiresAt     DateTime?           @map("review_expires_at") @db.Timestamptz(6)
+  createdAt           DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  listings            Listing[]
+
+  @@unique([provider, productName, planName, assignmentModel])
+  @@map("provider_products")
+}
+
+model Listing {
+  id              String        @id @default(uuid()) @db.Uuid
+  hostId          String        @map("host_id") @db.Uuid
+  productId       String        @map("product_id") @db.Uuid
+  priceMinor      Int           @map("price_minor")
+  currency        String        @db.Char(3)
+  status          ListingStatus @default(DRAFT)
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  host            User          @relation("ListingHost", fields: [hostId], references: [id], onDelete: Restrict)
+  product         ProviderProduct @relation(fields: [productId], references: [id], onDelete: Restrict)
+  inventory       ListingInventory[]
+  leases          Lease[]
+
+  @@index([status, productId])
+  @@map("listings")
+}
+
+model ListingInventory {
+  id          String          @id @default(uuid()) @db.Uuid
+  listingId   String          @map("listing_id") @db.Uuid
+  status      InventoryStatus @default(AVAILABLE)
+  listing     Listing         @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  lease       Lease?
+
+  @@index([listingId, status])
+  @@map("listing_inventory")
+}
+
+model Lease {
+  id              String          @id @default(uuid()) @db.Uuid
+  listingId       String          @map("listing_id") @db.Uuid
+  inventoryId     String          @unique @map("inventory_id") @db.Uuid
+  buyerId         String          @map("buyer_id") @db.Uuid
+  hostId          String          @map("host_id") @db.Uuid
+  status          LeaseStatus     @default(PENDING_HOST_ACCEPTANCE)
+  priceMinor      Int             @map("price_minor")
+  currency        String          @db.Char(3)
+  termStart       DateTime?       @map("term_start") @db.Timestamptz(6)
+  termEnd         DateTime?       @map("term_end") @db.Timestamptz(6)
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  listing         Listing         @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  inventory       ListingInventory @relation(fields: [inventoryId], references: [id], onDelete: Restrict)
+  buyer           User            @relation("LeaseBuyer", fields: [buyerId], references: [id], onDelete: Restrict)
+  host            User            @relation("LeaseHost", fields: [hostId], references: [id], onDelete: Restrict)
+  payment         PaymentRecord?
+  disputes        Dispute[]
+
+  @@index([buyerId, status])
+  @@index([hostId, status])
+  @@map("leases")
+}
+
+model PaymentRecord {
+  id                    String        @id @default(uuid()) @db.Uuid
+  leaseId               String        @unique @map("lease_id") @db.Uuid
+  provider              String        @db.VarChar(40)
+  providerPaymentId     String?       @unique @map("provider_payment_id") @db.VarChar(180)
+  amountMinor           Int           @map("amount_minor")
+  currency              String        @db.Char(3)
+  platformFeeMinor      Int           @map("platform_fee_minor")
+  status                PaymentStatus @default(PENDING)
+  createdAt             DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  lease                 Lease         @relation(fields: [leaseId], references: [id], onDelete: Restrict)
+
+  @@map("payment_records")
+}
+
+model WebhookEvent {
+  id              String    @id @default(uuid()) @db.Uuid
+  provider        String    @db.VarChar(40)
+  providerEventId String    @map("provider_event_id") @db.VarChar(180)
+  eventType       String    @map("event_type") @db.VarChar(120)
+  receivedAt      DateTime  @default(now()) @map("received_at") @db.Timestamptz(6)
+  processedAt     DateTime? @map("processed_at") @db.Timestamptz(6)
+  failureCode     String?   @map("failure_code") @db.VarChar(80)
+
+  @@unique([provider, providerEventId])
+  @@map("webhook_events")
+}
+
+model Dispute {
+  id            String    @id @default(uuid()) @db.Uuid
+  leaseId       String    @map("lease_id") @db.Uuid
+  reasonCode    String    @map("reason_code") @db.VarChar(80)
+  details       String?   @db.Text
+  resolution    String?   @db.VarChar(80)
+  resolvedAt    DateTime? @map("resolved_at") @db.Timestamptz(6)
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  lease         Lease     @relation(fields: [leaseId], references: [id], onDelete: Restrict)
+
+  @@index([leaseId, createdAt])
+  @@map("disputes")
+}
+
+model AuditEvent {
+  id                String   @id @default(uuid()) @db.Uuid
+  actorId           String?  @map("actor_id") @db.Uuid
+  action            String   @db.VarChar(120)
+  objectType        String   @map("object_type") @db.VarChar(80)
+  objectId          String?  @map("object_id") @db.Uuid
+  requestId         String   @map("request_id") @db.VarChar(80)
+  metadata          Json     @default("{}") @db.JsonB
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  actor             User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([objectType, objectId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("audit_events")
+}
