@@ -1,3 +1,5 @@
+@import '../../styles/design-system.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -10,62 +12,20 @@
     @apply bg-background text-foreground font-body;
   }
 
-  /* Dark mode color overrides */
-  .dark {
-    --background: hsl(30 12% 5%);
-    --foreground: #ffffff;
-    --muted: hsl(30 12% 20%);
-    --muted-foreground: #ffffff;
-    --primary: #ffffff;
-    --primary-foreground: hsl(30 12% 5%);
-    --secondary: hsl(30 12% 20%);
-    --accent: hsl(45 20% 25%);
-    --border: rgba(255, 255, 255, 0.3);
-    --input: rgba(255, 255, 255, 0.3);
-  }
 }
 
 @layer components {
-  /* Liquid Glass Effect - Light Theme */
   .liquid-glass {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--ss-surface);
     background-blend-mode: normal;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(13,12,11,.12);
-    box-shadow: 0 8px 32px rgba(13,12,11,.08), 0 2px 8px rgba(13,12,11,.04);
+    border: 1px solid var(--ss-line);
+    box-shadow: 0 12px 32px rgba(13, 12, 11, 0.06);
     position: relative;
     overflow: hidden;
   }
 
-  /* Dark mode liquid glass - much more opaque */
-  .dark .liquid-glass {
-    background: rgba(13, 12, 11, 0.95);
-    border: 1px solid rgba(242,240,236,.16);
-    box-shadow: 0 8px 32px rgba(0,0,0,.24), 0 2px 8px rgba(0,0,0,.12);
-  }
-
   .liquid-glass::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1.4px;
-    background: linear-gradient(180deg,
-      rgba(13,12,11,0.08) 0%, rgba(13,12,11,0.04) 20%,
-      rgba(13,12,11,0) 40%, rgba(13,12,11,0) 60%,
-      rgba(13,12,11,0.04) 80%, rgba(13,12,11,0.08) 100%);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  .dark .liquid-glass::before {
-    background: linear-gradient(180deg,
-      rgba(242,240,236,0.12) 0%, rgba(242,240,236,0.06) 20%,
-      rgba(242,240,236,0) 40%, rgba(242,240,236,0) 60%,
-      rgba(242,240,236,0.06) 80%, rgba(242,240,236,0.12) 100%);
+    content: none;
   }
 
   /* Keep video visible in both light and dark modes */
@@ -77,13 +37,49 @@
     background: rgba(13, 12, 11, 0.60) !important;
   }
 
-  /* Force white placeholders in dark mode */
-  .dark input::placeholder {
-    color: rgba(255, 255, 255, 0.6) !important;
+  .auth-shell .text-white,
+  .auth-shell [class*="text-white/"],
+  .auth-shell [style*="255, 255, 255"],
+  .auth-shell [style*="color: #ffffff"] {
+    color: var(--ss-ink) !important;
   }
 
-  /* Force white text in all inputs */
-  .dark input {
-    color: #ffffff !important;
+  .auth-shell [style*="Instrument Serif"] {
+    font-family: var(--ss-font) !important;
+  }
+
+  .auth-shell {
+    min-height: 100dvh;
+    color: var(--ss-ink);
+    background: var(--ss-paper);
+  }
+
+  .auth-shell__nav {
+    min-height: 82px;
+    border-bottom: 1px solid var(--ss-line);
+  }
+
+  .auth-shell__main {
+    min-height: calc(100dvh - 82px);
+  }
+
+  .auth-shell input::placeholder {
+    color: var(--ss-faint);
+  }
+
+  .auth-shell input {
+    color: var(--ss-ink) !important;
+    border-color: var(--ss-line);
+    border-width: 1px;
+    background: var(--ss-surface);
+  }
+
+  .auth-shell a:not(.ss-brand-link) {
+    text-decoration-color: var(--ss-accent);
+  }
+
+  @media (max-width: 640px) {
+    .auth-shell__nav { min-height: 68px; }
+    .auth-shell__main { min-height: calc(100dvh - 68px); }
   }
 }
