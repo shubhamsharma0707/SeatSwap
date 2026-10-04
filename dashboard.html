@@ -20,14 +20,15 @@
   <link rel="preconnect" href="https://d8j0ntlcm91z4.cloudfront.net" crossorigin>
   <link rel="preconnect" href="https://d2ol7oe51mr4n9.cloudfront.net" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles/design-system.css">
 
   <style>
     :root {
-      --fg: #0d0c0b;
-      --fg-soft: rgba(13,12,11,.64);
-      --fg-faint: rgba(13,12,11,.42);
-      --shade: #f2f0ec;
-      --rule: rgba(13,12,11,.16);
+      --fg: var(--ss-ink);
+      --fg-soft: var(--ss-muted);
+      --fg-faint: var(--ss-faint);
+      --shade: var(--ss-paper);
+      --rule: var(--ss-line);
       --ease: cubic-bezier(.22,.61,.36,1);
       --pill-bg: #0a0908;
       --pill-fg: #ffffff;
@@ -52,9 +53,9 @@
       --toggle-bg: rgba(13,12,11,.06);
       --card-bg: rgba(255,255,255,.92);
       --card-border: rgba(13,12,11,.08);
-      --accent-gold: #8b7d3a;
-      --accent-gold-bg: rgba(139,125,58,0.12);
-      --accent-gold-border: rgba(139,125,58,0.30);
+      --accent-gold: var(--ss-accent);
+      --accent-gold-bg: var(--ss-accent-soft);
+      --accent-gold-border: rgba(112,101,47,0.30);
     }
 
     [data-theme="dark"] {
@@ -185,12 +186,11 @@
       .hero__media,
       .card-3d,
       .catalog-card,
-      .host-calc-card,
       .telemetry-stat-card,
       .telemetry-panel,
       .section-header,
       .tool-icon-box,
-      .icon-3d-stage {
+      .requirement-icon {
         transform: none !important;
       }
     }
@@ -875,9 +875,9 @@
     .form-select {
       width: 100%;
       height: 42px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--apple-border);
-      border-radius: 999px;
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
+      border-radius: 12px;
       color: var(--apple-primary);
       padding: 0 16px;
       font-size: 13px;
@@ -888,8 +888,8 @@
 
     .form-input:focus,
     .form-select:focus {
-      border-color: #8b7d3a;
-      box-shadow: 0 0 0 1px rgba(139, 125, 58, 0.45);
+      border-color: var(--ss-ink);
+      box-shadow: 0 0 0 1px var(--ss-ink);
     }
 
     .form-select option {
@@ -898,15 +898,15 @@
     }
 
     .form-yield-preview {
-      background: linear-gradient(102deg, rgba(139, 125, 58, 0.15), rgba(238, 240, 208, 0.02));
-      border: 1px solid rgba(139, 125, 58, 0.35);
-      border-radius: 16px;
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
+      border-radius: 14px;
       padding: 16px 20px;
       margin-bottom: 22px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: inset 0 1px 0 rgba(139, 125, 58, 0.18);
+      box-shadow: none;
     }
 
     .yield-label {
@@ -920,10 +920,10 @@
       font-family: var(--font-apple);
       font-size: 26px;
       font-weight: 600;
-      color: #8b7d3a;
+      color: var(--ss-ink);
       letter-spacing: -0.015em;
       line-height: 1;
-      text-shadow: 0 2px 14px rgba(139, 125, 58, 0.40);
+      text-shadow: none;
     }
 
     /* ========================================================
@@ -1129,9 +1129,9 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      color: #8b7d3a;
-      background: rgba(139, 125, 58, 0.12);
-      border: 1px solid rgba(139, 125, 58, 0.30);
+      color: var(--ss-muted);
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
       padding: 5px 14px;
       border-radius: 999px;
       margin-bottom: 18px;
@@ -1141,8 +1141,8 @@
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: #8b7d3a;
-      box-shadow: 0 0 8px rgba(139, 125, 58, 0.5);
+      background: var(--ss-ink);
+      box-shadow: none;
       display: inline-block;
       flex-shrink: 0;
       opacity: 0.9;
@@ -1160,7 +1160,7 @@
 
     .section-title i {
       font-style: italic;
-      color: #8b7d3a;
+      color: inherit;
       font-weight: 600;
     }
 
@@ -1174,13 +1174,6 @@
       letter-spacing: -0.008em;
     }
 
-    /* 3D Perspective Stage */
-    .perspective-stage {
-      perspective: 1200px;
-      transform-style: preserve-3d;
-      will-change: transform;
-    }
-
     /* Feature Pillars Grid */
     .pillars-grid {
       display: grid;
@@ -1190,15 +1183,12 @@
 
     .pillar-card {
       position: relative;
-      background: linear-gradient(102deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
-      border: 1px solid var(--apple-border);
-      border-radius: 22px;
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
+      border-radius: 24px;
       padding: clamp(28px, 2.8vw, 38px);
-      backdrop-filter: var(--apple-frosted-filter);
-      -webkit-backdrop-filter: var(--apple-frosted-filter);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 40px -15px rgba(0, 0, 0, 0.5);
-      transform-style: preserve-3d;
-      transition: border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.45s ease;
+      box-shadow: 0 8px 24px -18px rgba(13, 12, 11, 0.28);
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
       overflow: hidden;
       cursor: default;
       display: flex;
@@ -1207,8 +1197,6 @@
 
     /* 3D Card Scroll-Driven Focal Scale & Perspective Zoom */
     .card-3d,
-    .catalog-card,
-    .host-calc-card,
     .telemetry-stat-card,
     .telemetry-panel,
     .section-header {
@@ -1218,23 +1206,10 @@
       transition: border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
-    .pillar-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(139, 125, 58, 0.18) 0%, transparent 60%);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s ease;
-    }
-
-    .pillar-card:hover::before {
-      opacity: 1;
-    }
-
     .pillar-card:hover {
-      border-color: rgba(139, 125, 58, 0.50);
-      box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(238, 240, 208, 0.15);
+      border-color: var(--ss-muted);
+      box-shadow: 0 12px 28px -18px rgba(13, 12, 11, 0.36);
+      transform: translateY(-2px);
     }
 
     .pillar-header {
@@ -1267,8 +1242,7 @@
       font-size: 32px;
       font-weight: 600;
       letter-spacing: -0.02em;
-      color: #8b7d3a;
-      opacity: 0.95;
+      color: var(--ss-ink);
       line-height: 1;
     }
 
@@ -1276,7 +1250,7 @@
       font-family: var(--font-apple);
       font-size: 11px;
       font-weight: 600;
-      color: rgba(13,12,11,.55);
+      color: var(--ss-muted);
       letter-spacing: 0.07em;
       text-transform: uppercase;
     }
@@ -1286,64 +1260,32 @@
       display: inline-block;
       font-size: 11px;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      padding: 4px 10px;
+      text-transform: none;
+      letter-spacing: 0;
+      padding: 5px 10px;
       border-radius: 999px;
-      background: rgba(139, 125, 58, 0.15);
-      border: 1px solid rgba(139, 125, 58, 0.35);
-      color: #6b5d2a;
+      background: var(--ss-paper);
+      border: 1px solid var(--ss-line);
+      color: var(--ss-muted);
     }
 
-    /* 3D Zoom-out Icon Stage */
-    .icon-3d-stage {
+    .requirement-icon {
       width: 52px;
       height: 52px;
       margin: 10px 0 20px;
-      position: relative;
-      perspective: 800px;
-      transform-style: preserve-3d;
-      transform: scale(var(--icon-zoom, 1)) rotateX(var(--icon-tilt-x, 0deg)) rotateY(var(--icon-tilt-y, 0deg));
-      will-change: transform;
-      transition: none;
-    }
-
-    .icon-3d-base {
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      background: linear-gradient(135deg, rgba(139, 125, 58, 0.18), rgba(255, 255, 255, 0.03));
-      border: 1px solid rgba(139, 125, 58, 0.35);
-      box-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-      transform: translateZ(0);
-    }
-
-    .icon-3d-emblem {
-      position: absolute;
-      inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      transform: translateZ(24px) scale(var(--icon-zoom, 1));
-      transform-style: preserve-3d;
-      color: #8b7d3a;
-      animation: float3d 5s ease-in-out infinite;
+      border: 1px solid var(--ss-line);
+      border-radius: 14px;
+      background: var(--ss-paper);
     }
 
-    @keyframes float3d {
-      0%, 100% {
-        transform: translateZ(24px) scale(var(--icon-zoom, 1)) translateY(0) rotateX(6deg) rotateY(-6deg);
-      }
-      50% {
-        transform: translateZ(32px) scale(var(--icon-zoom, 1)) translateY(-6px) rotateX(-4deg) rotateY(4deg);
-      }
-    }
-
-    .icon-3d-svg {
+    .requirement-icon-mark {
       width: 24px;
       height: 24px;
-      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
-      stroke: #8b7d3a;
+      color: var(--ss-ink);
+      stroke: currentColor;
     }
 
     .pillar-title {
@@ -1387,13 +1329,10 @@
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 38px;
-      background: linear-gradient(102deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
-      border: 1px solid var(--apple-border);
-      border-radius: 999px;
-      padding: 6px 8px 6px 14px;
-      backdrop-filter: var(--apple-frosted-filter);
-      -webkit-backdrop-filter: var(--apple-frosted-filter);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
+      border-radius: 16px;
+      padding: 8px;
     }
 
     .filter-pills {
@@ -1414,28 +1353,28 @@
       font-weight: 500;
       letter-spacing: -0.008em;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background-color 0.16s ease, color 0.16s ease;
     }
 
     .filter-btn:hover {
       color: var(--apple-primary);
-      background: rgba(255, 255, 255, 0.08);
+      background: var(--ss-paper);
     }
 
     .filter-btn.is-active {
-      background: var(--cream);
-      color: var(--ink);
-      border-color: #8b7d3a;
+      background: var(--ss-ink);
+      color: var(--ss-surface);
+      border-color: var(--ss-ink);
       font-weight: 600;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      box-shadow: none;
     }
 
     .search-box {
       display: flex;
       align-items: center;
       gap: 9px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--apple-border);
+      background: var(--ss-paper);
+      border: 1px solid var(--ss-line);
       border-radius: 999px;
       padding: 7px 16px;
       width: min(100%, 280px);
@@ -1443,8 +1382,8 @@
     }
 
     .search-box:focus-within {
-      border-color: #8b7d3a;
-      box-shadow: 0 0 0 1px rgba(139, 125, 58, 0.45);
+      border-color: var(--ss-ink);
+      box-shadow: 0 0 0 1px var(--ss-ink);
     }
 
     .search-box svg {
@@ -1478,62 +1417,20 @@
 
     .catalog-card {
       position: relative;
-      background: linear-gradient(102deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
-      border: 1px solid var(--apple-border);
-      border-radius: 22px;
-      padding: 30px 24px 24px;
-      backdrop-filter: var(--apple-frosted-filter);
-      -webkit-backdrop-filter: var(--apple-frosted-filter);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 20px 45px -15px rgba(0, 0, 0, 0.6);
-      transform-style: preserve-3d;
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
+      border-radius: 24px;
+      padding: 26px 24px 24px;
+      box-shadow: 0 8px 24px -18px rgba(13, 12, 11, 0.28);
       display: flex;
       flex-direction: column;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
     }
 
     .catalog-card:hover:not(.is-tilting) {
-      transform: perspective(1000px) translateY(-5px) scale(var(--card-zoom, 1));
-      border-color: rgba(139, 125, 58, 0.50);
-      box-shadow: 0 24px 50px -12px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(238, 240, 208, 0.15);
-    }
-
-    /* Signature Overhanging Cream Accent */
-    .card-overhang-pill {
-      position: absolute;
-      top: -13px;
-      right: 22px;
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--font-apple);
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      padding: 3px 6px 3px 12px;
-      border-radius: 999px;
-      box-shadow: 0 8px 22px -4px rgba(0, 0, 0, 0.65), 0 2px 6px rgba(0, 0, 0, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 3;
-    }
-
-    .card-overhang-pill .overhang-verified {
-      color: #1a1a12;
-      font-weight: 600;
-      font-size: 10.5px;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-    }
-
-    .card-overhang-pill .card-save-badge {
-      background: rgba(255,255,255,.95);
-      color: #8b7d3a;
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 2px 7px;
-      border-radius: 999px;
+      transform: translateY(-2px);
+      border-color: var(--ss-muted);
+      box-shadow: 0 12px 28px -18px rgba(13, 12, 11, 0.36);
     }
 
     .card-top {
@@ -1558,29 +1455,22 @@
       justify-content: center;
       flex-shrink: 0;
       position: relative;
-      perspective: 600px;
-      transform-style: preserve-3d;
-      background: linear-gradient(135deg, rgba(139, 125, 58, 0.18), rgba(255, 255, 255, 0.03));
-      border: 1px solid rgba(139, 125, 58, 0.35);
-      box-shadow: 0 10px 22px -6px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-      transform: scale(var(--icon-zoom, 1)) rotateX(var(--icon-tilt-x, 8deg)) rotateY(var(--icon-tilt-y, -8deg));
-      will-change: transform;
-      transition: box-shadow 0.28s ease, border-color 0.28s ease;
-      color: #8b7d3a;
+      background: var(--ss-paper);
+      border: 1px solid var(--ss-line);
+      box-shadow: none;
+      transform: none;
+      color: var(--ss-ink);
     }
 
     .catalog-card:hover .tool-icon-box {
-      transform: scale(1.06) rotateX(0deg) rotateY(0deg) translateZ(8px);
-      border-color: rgba(139, 125, 58, 0.55);
-      box-shadow: 0 14px 28px -6px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-      transition: box-shadow 0.28s ease, border-color 0.28s ease;
+      border-color: var(--ss-muted);
     }
 
-    .tool-3d-svg {
+    .tool-icon-mark {
       width: 22px;
       height: 22px;
-      filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-      transform: translateZ(8px);
+      filter: brightness(0);
+      transform: none;
       display: block;
     }
 
@@ -1625,21 +1515,22 @@
       font-family: var(--font-apple);
       font-size: 11px;
       font-weight: 600;
-      letter-spacing: 0.07em;
+      letter-spacing: 0;
       text-transform: uppercase;
       padding: 4px 9px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--apple-secondary);
-      border: 1px solid var(--apple-border);
+      background: var(--ss-paper);
+      color: var(--ss-muted);
+      border: 1px solid var(--ss-line);
+      text-transform: none;
     }
 
     .status-pill .pulse-dot {
       width: 5px;
       height: 5px;
       border-radius: 50%;
-      background: var(--cream);
-      box-shadow: 0 0 6px rgba(238, 240, 208, 0.6);
+      background: var(--ss-ink);
+      box-shadow: none;
       animation: none;
     }
 
@@ -1702,18 +1593,6 @@
       opacity: 0.7;
     }
 
-    .card-price-terms {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-      color: #8b7d3a;
-      opacity: 0.9;
-      text-align: right;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
-
     .card-features-list {
       list-style: none;
       margin-bottom: 22px;
@@ -1750,7 +1629,7 @@
     .card-features-list li svg {
       width: 13px;
       height: 13px;
-      color: #8b7d3a;
+      color: var(--ss-muted);
       flex-shrink: 0;
       opacity: 0.95;
     }
@@ -1765,17 +1644,24 @@
       border-radius: 999px;
       margin-top: auto;
       gap: 6px;
+      background: var(--ss-ink);
+      color: var(--ss-surface);
+      box-shadow: none;
+    }
+
+    .card-action-btn:hover {
+      background: var(--ss-ink);
+      color: var(--ss-surface);
+      transform: translateY(-1px);
     }
 
     /* Host Calculator Section Card */
     .host-calc-card {
-      background: linear-gradient(102deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.03));
-      border: 1px solid var(--apple-border);
+      background: var(--ss-surface);
+      border: 1px solid var(--ss-line);
       border-radius: 24px;
       padding: clamp(28px, 4vw, 48px);
-      backdrop-filter: var(--apple-frosted-filter);
-      -webkit-backdrop-filter: var(--apple-frosted-filter);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 50px -15px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 8px 24px -18px rgba(13, 12, 11, 0.28);
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: clamp(28px, 4vw, 56px);
@@ -1803,11 +1689,11 @@
     }
 
     .calc-box {
-      background: linear-gradient(102deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-      border: 1px solid var(--apple-border);
-      border-radius: 20px;
+      background: var(--ss-paper);
+      border: 1px solid var(--ss-line);
+      border-radius: 18px;
       padding: clamp(20px, 2.5vw, 28px);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      box-shadow: none;
     }
 
     /* Telemetry Section */
@@ -1857,7 +1743,7 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.07em;
-      color: #8b7d3a;
+      color: var(--ss-ink);
       opacity: 0.9;
     }
 
@@ -2123,9 +2009,6 @@
         align-items: flex-start;
         gap: 8px;
       }
-      .card-price-terms {
-        text-align: left;
-      }
       .card-price-main {
         font-size: 26px;
       }
@@ -2156,9 +2039,6 @@
   </div>
 
   <div class="page">
-    <p role="note" style="position:sticky; top:0; z-index:1000; margin:0; padding:10px 18px; text-align:center; background:#fff3cd; color:#594300; font:500 13px/1.4 Inter, sans-serif;">
-      Prototype only: every product, price, listing, host, activity metric, access check, payment, and refund example is fictional. No offers, software access, payments, escrow, monitoring, or dispute handling are live.
-    </p>
     <section class="hero">
       <img class="hero__media hero__media--desktop hero__still--desktop"
            src="https://d2ol7oe51mr4n9.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/193afe38-41fa-4454-9d48-ed154b66d17c.png"
@@ -2293,7 +2173,7 @@
     <!-- Main Scrollable Dashboard Content -->
     <main class="dashboard-main">
       <!-- ========================================================
-           SECTION 1: 3D KINETIC WORKFLOW & FEATURE PILLARS
+           SECTION 1: PRODUCT REQUIREMENTS
            ======================================================== -->
       <section class="section section--pillars" id="features">
         <div class="container-measure">
@@ -2308,10 +2188,9 @@
             </p>
           </div>
 
-          <div class="perspective-stage">
-            <div class="pillars-grid">
+          <div class="pillars-grid">
               <!-- Requirement 1: Provider permission -->
-              <div class="pillar-card card-3d">
+              <div class="pillar-card">
                 <div class="pillar-header">
                   <div class="pillar-folio-wrap">
                     <span class="pillar-folio">01</span>
@@ -2319,30 +2198,25 @@
                   </div>
                   <span class="pillar-badge">Review required</span>
                 </div>
-                <div class="icon-3d-stage">
-                  <div class="icon-3d-base"></div>
-                  <div class="icon-3d-emblem">
-                    <svg class="icon-3d-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                <div class="requirement-icon"><svg class="requirement-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
                       <rect x="3" y="11" width="18" height="11" rx="3" ry="3"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       <circle cx="12" cy="16" r="1.5"/>
-                    </svg>
-                  </div>
-                </div>
+                    </svg></div>
                 <h3 class="pillar-title">Provider-approved assignment</h3>
                 <p class="pillar-desc">
                   Any future access must use a seat assignment that the provider and exact plan allow. This prototype does not send invitations or handle credentials.
                 </p>
                 <div class="pillar-footer">
                   <span>No provider workflow connected</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--ss-ink);">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               </div>
 
               <!-- Requirement 2: Payment approval -->
-              <div class="pillar-card card-3d">
+              <div class="pillar-card">
                 <div class="pillar-header">
                   <div class="pillar-folio-wrap">
                     <span class="pillar-folio">02</span>
@@ -2350,29 +2224,24 @@
                   </div>
                   <span class="pillar-badge">Approval required</span>
                 </div>
-                <div class="icon-3d-stage">
-                  <div class="icon-3d-base"></div>
-                  <div class="icon-3d-emblem">
-                    <svg class="icon-3d-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                <div class="requirement-icon"><svg class="requirement-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
                       <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                       <path d="M9 12l2 2 4-4"/>
-                    </svg>
-                  </div>
-                </div>
+                    </svg></div>
                 <h3 class="pillar-title">Payments need partner approval</h3>
                 <p class="pillar-desc">
                   SeatSwap does not collect, hold, or route money. A permitted payment and refund process must be agreed with a payment provider before launch.
                 </p>
                 <div class="pillar-footer">
                   <span>No payment integration</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--ss-ink);">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               </div>
 
               <!-- Requirement 3: Access support -->
-              <div class="pillar-card card-3d">
+              <div class="pillar-card">
                 <div class="pillar-header">
                   <div class="pillar-folio-wrap">
                     <span class="pillar-folio">03</span>
@@ -2380,26 +2249,20 @@
                   </div>
                   <span class="pillar-badge">Workflow undefined</span>
                 </div>
-                <div class="icon-3d-stage">
-                  <div class="icon-3d-base"></div>
-                  <div class="icon-3d-emblem">
-                    <svg class="icon-3d-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
+                <div class="requirement-icon"><svg class="requirement-icon-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round">
                       <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                    </svg>
-                  </div>
-                </div>
+                    </svg></div>
                 <h3 class="pillar-title">Access and support need a plan</h3>
                 <p class="pillar-desc">
                   Providers may not expose a reliable way to monitor an assigned seat. A pilot needs a support, cancellation, and refund process that does not promise unavailable automation.
                 </p>
                 <div class="pillar-footer">
                   <span>No monitoring or dispute service</span>
-                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: #8b7d3a;">
+                  <svg class="check check-svg" viewBox="0 0 14 14" fill="none" aria-hidden="true" style="width: 12px; height: 12px; color: var(--ss-ink);">
                     <path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
               </div>
-            </div>
           </div>
         </div>
       </section>
@@ -2437,18 +2300,14 @@
             </div>
           </div>
 
-          <!-- 6 Rich SaaS Tool Cards -->
+          <!-- Illustrative catalog cards -->
           <div class="catalog-grid" id="catalogGrid">
             <!-- 1. Figma Enterprise -->
-            <div class="catalog-card card-3d" data-tool="figma" data-category="design,productivity">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="figma" data-category="design,productivity">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="Figma 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 38 57" fill="none" aria-hidden="true" style="width: 18px; height: 26px;">
+                  <div class="tool-icon-box" title="Figma product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 38 57" fill="none" aria-hidden="true" style="width: 18px; height: 26px;">
                       <path d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0z" fill="var(--cream)" opacity="0.95"/>
                       <path d="M0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0z" fill="#ffffff" opacity="0.9"/>
                       <path d="M19 0v19h9.5a9.5 9.5 0 1 0 0-19H19z" fill="var(--cream)" opacity="0.85"/>
@@ -2468,28 +2327,23 @@
                   <div class="card-price-main"><span class="price" data-usd="$12.00" data-inr="₹996">$12.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Full Dev Mode &amp; Code Connect</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Unlimited design system variables</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> AI generator &amp; FigJam workspace</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('figma')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('figma')">
                 View example (<span class="price" data-usd="$12.00/mo" data-inr="₹996/mo">$12.00/mo</span>) &rarr;
               </button>
             </div>
 
             <!-- 2. Adobe Creative Cloud -->
-            <div class="catalog-card card-3d" data-tool="adobe" data-category="design">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="adobe" data-category="design">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="Adobe CC 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <div class="tool-icon-box" title="Adobe CC product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z" fill="var(--cream)"/>
                     </svg>
                   </div>
@@ -2505,28 +2359,23 @@
                   <div class="card-price-main"><span class="price" data-usd="$18.00" data-inr="₹1,494">$18.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Photoshop, Illustrator, Premiere &amp; 20+ apps</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> 100GB high-speed Adobe cloud storage</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Adobe Fonts &amp; Firefly AI generations</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('adobe')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('adobe')">
                 View example (<span class="price" data-usd="$18.00/mo" data-inr="₹1,494/mo">$18.00/mo</span>) &rarr;
               </button>
             </div>
 
             <!-- 3. LeetCode Premium Pro -->
-            <div class="catalog-card card-3d" data-tool="leetcode" data-category="dev">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="leetcode" data-category="dev">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="LeetCode 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <div class="tool-icon-box" title="LeetCode product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path d="M16.1 17.6l-3.3 3.3c-2.5 2.5-6.6 2.5-9.1 0-2.5-2.5-2.5-6.6 0-9.1l5.5-5.5c2.5-2.5 6.6-2.5 9.1 0l.7.7" stroke="var(--cream)" stroke-width="2" stroke-linecap="round"/>
                       <path d="M9 13.5h9" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
                     </svg>
@@ -2543,28 +2392,23 @@
                   <div class="card-price-main"><span class="price" data-usd="$9.00" data-inr="₹747">$9.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> FAANG target company interview question banks</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Lightning-fast evaluation server queue</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Editorial video solutions &amp; debugger</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('leetcode')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('leetcode')">
                 View example (<span class="price" data-usd="$9.00/mo" data-inr="₹747/mo">$9.00/mo</span>) &rarr;
               </button>
             </div>
 
             <!-- 4. Midjourney Pro Plan -->
-            <div class="catalog-card card-3d" data-tool="midjourney" data-category="ai">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="midjourney" data-category="ai">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="Midjourney 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <div class="tool-icon-box" title="Midjourney product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path d="M12 3L4 16h16L12 3z" stroke="var(--cream)" stroke-width="1.8" stroke-linejoin="round"/>
                       <path d="M12 21v-5m-4 5h8" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
@@ -2581,28 +2425,23 @@
                   <div class="card-price-main"><span class="price" data-usd="$15.00" data-inr="₹1,245">$15.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Stealth mode (private image creations)</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> 30h fast GPU + unlimited relaxed render</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Concurrent 12 fast job pipeline</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('midjourney')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('midjourney')">
                 View example (<span class="price" data-usd="$15.00/mo" data-inr="₹1,245/mo">$15.00/mo</span>) &rarr;
               </button>
             </div>
 
             <!-- 5. Canva Enterprise -->
-            <div class="catalog-card card-3d" data-tool="canva" data-category="design,productivity">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="canva" data-category="design,productivity">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="Canva 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <div class="tool-icon-box" title="Canva product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <circle cx="12" cy="12" r="9" stroke="var(--cream)" stroke-width="1.6"/>
                       <path d="M15 9.5c-1.5-1.5-4-1.5-5.5 0s-1.5 4 0 5.5 4 1.5 5.5 0" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
@@ -2619,28 +2458,23 @@
                   <div class="card-price-main"><span class="price" data-usd="$8.00" data-inr="₹664">$8.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Unlimited brand kits, colors &amp; custom fonts</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Magic Studio AI generators &amp; background eraser</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> 1TB pooled team cloud asset vault</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('canva')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('canva')">
                 View example (<span class="price" data-usd="$8.00/mo" data-inr="₹664/mo">$8.00/mo</span>) &rarr;
               </button>
             </div>
 
             <!-- 6. ChatGPT Team Workspace -->
-            <div class="catalog-card card-3d" data-tool="chatgpt" data-category="ai">
-              <div class="card-overhang-pill">
-                <span class="overhang-verified">Sample item</span>
-                <span class="card-save-badge">Illustrative price</span>
-              </div>
+            <div class="catalog-card" data-tool="chatgpt" data-category="ai">
               <div class="card-top">
                 <div class="tool-brand">
-                  <div class="tool-icon-box" title="ChatGPT 3D Isometric Emblem">
-                    <svg class="tool-3d-svg" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <div class="tool-icon-box" title="ChatGPT product icon">
+                    <svg class="tool-icon-mark" viewBox="0 0 24 24" fill="none" stroke="var(--cream)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                       <path d="M12 2a4 4 0 0 1 4 4v1.5a4 4 0 0 1 2.8 1.6 4 4 0 0 1 1.2 3.9 4 4 0 0 1-1.2 3 4 4 0 0 1-2.8 1.6V19a4 4 0 0 1-4 4 4 4 0 0 1-4-4v-1.5a4 4 0 0 1-2.8-1.6 4 4 0 0 1-1.2-3.9 4 4 0 0 1 1.2-3A4 4 0 0 1 6 7.4V6a4 4 0 0 1 4-4z"/>
                     </svg>
                   </div>
@@ -2656,14 +2490,13 @@
                   <div class="card-price-main"><span class="price" data-usd="$14.00" data-inr="₹1,162">$14.00</span><span>/ mo</span></div>
                   <div class="card-price-compare">Illustrative price · not for sale</div>
                 </div>
-                <div class="card-price-terms">Example only · no offer</div>
               </div>
               <ul class="card-features-list">
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Higher message caps on GPT-4o &amp; Canvas</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Create &amp; share custom team GPTs</li>
                 <li><svg class="check check-svg" viewBox="0 0 14 14" fill="none"><path d="M2.4 7.4l3 3 6.2-7" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"/></svg> Zero business data model training guarantee</li>
               </ul>
-              <button type="button" class="btn btn--cream card-action-btn" onclick="openLeaseWithTool('chatgpt')">
+              <button type="button" class="btn btn--dark card-action-btn" onclick="openLeaseWithTool('chatgpt')">
                 View example (<span class="price" data-usd="$14.00/mo" data-inr="₹1,162/mo">$14.00/mo</span>) &rarr;
               </button>
             </div>
@@ -2680,7 +2513,7 @@
               <p class="host-calc-desc">
                 The numbers below demonstrate a possible pricing calculation only. They are not a fee schedule, earnings estimate, or invitation to list a product.
               </p>
-              <button type="button" class="btn btn--cream" onclick="openHostModal()">
+              <button type="button" class="btn btn--dark" onclick="openHostModal()">
                 Preview host scenario &rarr;
               </button>
             </div>
@@ -2712,7 +2545,7 @@
               <div class="form-yield-preview" style="margin-bottom: 0;">
                 <div>
                   <div class="yield-label">Example gross: <span id="inlineGross">$72.00</span> • Assumed fee (15%): <span id="inlineFee">-$10.80</span></div>
-                  <div class="yield-label" style="margin-top: 4px; font-weight: 500; color: #8b7d3a; letter-spacing: 0.06em; text-transform: uppercase; font-size: 11px;">Example net after assumed 15% fee:</div>
+                  <div class="yield-label" style="margin-top: 4px; font-weight: 500; color: var(--apple-secondary); text-transform: none; font-size: 11px;">Example net after assumed 15% fee:</div>
                 </div>
                 <div class="yield-val" id="inlineNet">$61.20/mo</div>
               </div>
@@ -2850,7 +2683,7 @@
           <div class="footer-top">
             <div>
               <div class="footer-brand-title">
-                <svg class="brand__mark" viewBox="0 0 16 16" fill="currentColor" style="width: 1.25em; height: 1.25em; color: #8b7d3a;" aria-hidden="true">
+                <svg class="brand__mark" viewBox="0 0 16 16" fill="currentColor" style="width: 1.25em; height: 1.25em; color: var(--ss-ink);" aria-hidden="true">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M4 1.75C3.31 1.75 2.75 2.31 2.75 3v4.25c0 .69.56 1.25 1.25 1.25h3.25V7H4V3h4V1.75H4zm8 12.5c.69 0 1.25-.56 1.25-1.25V8.75c0-.69-.56-1.25-1.25-1.25H8.75V9H12v4H8v1.25h4zM10.854 2.146a.5.5 0 0 1 0 .708L9.707 4H13.5a.5.5 0 0 1 0 1H9.707l1.147 1.146a.5.5 0 0 1-.708.708l-2-2a.5.5 0 0 1 0-.708l2-2a.5.5 0 0 1 .708 0zM5.146 13.854a.5.5 0 0 1 0-.708L6.293 12H2.5a.5.5 0 0 1 0-1h3.793L5.146 9.854a.5.5 0 0 1 .708-.708l2 2a.5.5 0 0 1 0 .708l-2 2a.5.5 0 0 1-.708 0z"/>
                 </svg>
                 <span style="font-family: var(--font-apple); font-size: 22px; font-weight: 600; letter-spacing: -0.015em; color: var(--apple-primary);">SeatSwap</span>
@@ -3176,7 +3009,7 @@
     let cachedScrollCards = null;
     function getScrollCards() {
       if (!cachedScrollCards) {
-        cachedScrollCards = Array.from(document.querySelectorAll('.card-3d, .catalog-card, .host-calc-card, .telemetry-stat-card, .telemetry-panel, .section-header'));
+        cachedScrollCards = Array.from(document.querySelectorAll('.card-3d, .telemetry-stat-card, .telemetry-panel, .section-header'));
       }
       return cachedScrollCards;
     }
@@ -3339,7 +3172,7 @@
       if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         return;
       }
-      const tiltCards = document.querySelectorAll('.card-3d, .catalog-card');
+      const tiltCards = document.querySelectorAll('.card-3d');
       tiltCards.forEach(card => {
         let cachedRect = null;
 
