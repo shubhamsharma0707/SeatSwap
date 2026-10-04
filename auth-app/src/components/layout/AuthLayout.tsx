@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 interface AuthLayoutProps {
   children: React.ReactNode
@@ -40,6 +41,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         </a>
 
         <div className="hidden md:flex items-center gap-8">
+          <Link to="/profile" className="text-sm transition-colors hover:opacity-70" style={{ color: '#ffffff' }}>
+            Account
+          </Link>
           <a href="/index.html" className="text-sm transition-colors hover:opacity-70" style={{ color: '#ffffff' }}>
             Home
           </a>
@@ -51,6 +55,12 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           </a>
         </div>
       </nav>
+
+      {import.meta.env.MODE === 'preview' && (
+        <div role="status" className="relative z-10 mx-auto max-w-3xl px-6 pb-4 text-center text-sm text-white/90">
+          Frontend preview only. Account features are not connected yet.
+        </div>
+      )}
 
       {/* Content */}
       <div className="relative z-10">
