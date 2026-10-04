@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: seatswap
+      POSTGRES_PASSWORD: local-only-change-me
+      POSTGRES_DB: seatswap
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - seatswap-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U seatswap -d seatswap"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  mailpit:
+    image: ghcr.io/axllent/mailpit:v1.31.3
+    ports:
+      - "127.0.0.1:1025:1025"
+      - "127.0.0.1:8025:8025"
+
+volumes:
+  seatswap-postgres:
