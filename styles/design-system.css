@@ -1,0 +1,47 @@
+:root {
+  --ss-paper: #f2f0ec;
+  --ss-surface: #fbfaf7;
+  --ss-ink: #0d0c0b;
+  --ss-muted: rgba(13, 12, 11, 0.64);
+  --ss-faint: rgba(13, 12, 11, 0.42);
+  --ss-line: rgba(13, 12, 11, 0.16);
+  --ss-accent: #0d0c0b;
+  --ss-accent-soft: #e8e6e1;
+  --ss-font: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --ss-radius-card: 20px;
+  --ss-radius-control: 12px;
+}
+
+body {
+  font-family: var(--ss-font);
+}
+
+:where(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid var(--ss-accent);
+  outline-offset: 3px;
+}
+
+.ss-brand-link {
+  color: var(--ss-ink);
+  font-family: var(--ss-font);
+  font-size: 1.45rem;
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  text-decoration: none;
+}
+
+.auth-shell {
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ss-paper: #0d0c0b;
+  --ss-surface: #191816;
+  --ss-ink: #f2f0ec;
+  --ss-muted: rgba(242, 240, 236, 0.68);
+  --ss-faint: rgba(242, 240, 236, 0.46);
+  --ss-line: rgba(242, 240, 236, 0.16);
+  --ss-accent: #f2f0ec;
+  --ss-accent-soft: #242320;
+}
