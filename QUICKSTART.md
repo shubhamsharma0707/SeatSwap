@@ -1,264 +1,45 @@
-# 🚀 SeatSwap - Quick Start Guide
+# SeatSwap local development
 
-## ✅ Everything is Connected and Ready!
+SeatSwap is a prototype. The catalog and pricing are hard-coded examples. Implemented backend flows cover account registration, email verification, login/session, profile update, logout, and password reset. Listings, seat assignment, payments, escrow, monitoring, and disputes are not implemented.
 
-All your pages are now fully integrated with authentication. Here's how to test:
+## Run the frontend
 
----
+From the repository root:
 
-## 🎯 Access SeatSwap in Your Browser
-
-The server is currently running and active on **both** Port 3000 and Port 8080!
-
-Open any of these links:
-- **Dashboard**: [http://localhost:3000/dashboard.html](http://localhost:3000/dashboard.html) (or `http://localhost:8080/dashboard.html`)
-- **Landing Page**: [http://localhost:3000/index.html](http://localhost:3000/index.html) (or `http://localhost:8080/index.html`)
-- **Auth / Login**: [http://localhost:3000/login](http://localhost:3000/login) (or `http://localhost:8080/auth-app/dist/index.html`)
-
-To restart the server at any time:
 ```bash
 npm start
-# or: node server.js
 ```
 
----
+Open `http://localhost:3000/index.html`. The static server binds to loopback by default; the optional mirror listener is disabled unless `SECONDARY_PORT` is set. The static landing page works by itself; account features need the API and its database/email dependencies. The root URL `/` serves the fictional, read-only dashboard prototype for preview. Visiting `/dashboard.html` directly redirects to sign-in without a valid account session. For a container behind a reverse proxy, set `STATIC_HOST=0.0.0.0` and keep the public traffic behind the proxy's TLS termination.
 
-## 🧪 Testing Checklist
+## Run the API
 
-### **1. Test New User Journey** (Sign Up)
-```
-✅ Visit: http://localhost:8080/index.html
-✅ Click "Browse available seats" button
-✅ Should redirect to login page
-✅ Click "Create an account"
-✅ Fill form and submit
-✅ Should auto-login and go to dashboard
-✅ User menu should appear in top-right
-```
+1. Install the API dependencies with `cd backend && npm install`.
+2. Copy `.env.example` to `.env` and set a unique `COOKIE_SIGNING_SECRET` and `EMAIL_ENCRYPTION_KEY` for this local environment.
+3. From `backend/`, start the local PostgreSQL and Mailpit services with `docker compose up -d`.
+4. Run `npm run db:generate`, then `npm run db:migrate`.
+5. In one terminal, start the API with `npm run dev`. In a second terminal from the repository root, run `npm start`.
 
-### **2. Test Login Flow**
-```
-✅ Clear localStorage (DevTools → Application → Clear)
-✅ Visit: http://localhost:8080/dashboard.html
-✅ Should redirect to login
-✅ Enter any email/password
-✅ Should return to dashboard
-✅ Lease modals should work
-```
+Local verification emails appear in the Mailpit inbox at `http://localhost:8025`. The Compose services bind to loopback and use development-only credentials. For a non-Docker setup, provide a PostgreSQL database and SMTP server through `.env` instead.
 
-### **3. Test Logout**
-```
-✅ Click user menu dropdown
-✅ Click "Sign Out"
-✅ Should clear auth and return to landing
-✅ User menu should disappear
-```
+Alternatively, from the repository root, `npm run backend:dev` starts the API. The static server proxies `/api/v1/*` to API port 4001. `GET /api/v1/health/live` checks that the process responds; `GET /api/v1/health/ready` also requires PostgreSQL and email delivery configuration. If port 3000 is already in use, start the static server with `PORT=3110 npm start` and set `APP_BASE_URL=http://localhost:3110/auth-app/dist/index.html` in `backend/.env` so email links return to the right local site.
 
----
+The production API image can be built with `docker build -t seatswap-api:local backend`. It runs as a non-root user and exposes port 4001. Production deployment still needs TLS termination, production secrets, a managed PostgreSQL database, and a controlled migration step; the image does not run migrations automatically.
 
-## 🌐 Page Links
+Account registration and password recovery require PostgreSQL and SMTP. The local Compose setup provides PostgreSQL and Mailpit; without database and email configuration, authentication requests return an unavailable response. No demo password or localStorage token grants access.
 
-| Page | URL | Auth Required |
-|------|-----|---------------|
-| Landing | http://localhost:8080/index.html | ❌ No |
-| Dashboard | http://localhost:8080/dashboard.html | ✅ Yes |
-| Login | http://localhost:8080/auth-app/dist/index.html | ❌ No |
-| Sign Up | http://localhost:8080/auth-app/dist/index.html#/signup | ❌ No |
-| Reset Password | http://localhost:8080/auth-app/dist/index.html#/reset-password | ❌ No |
+## Rebuild the authentication UI
 
----
-
-## 🔑 Current Authentication
-
-**Mock Mode** (for testing):
-- Any email works
-- Any password works
-- Auto-generates token
-- Saves to localStorage
-
-**Test Credentials:**
-- Email: `test@seatswap.com`
-- Password: `password123`
-- Or any other combination!
-
----
-
-## 🎨 What's Working
-
-✅ **Landing Page**
-- Video background with scroll animations
-- Currency toggle (USD/INR)
-- Navigation with auth-aware buttons
-- Shows user menu when logged in
-
-✅ **Dashboard**
-- Protected by authentication
-- Auto-redirects to login if needed
-- Catalog browsing with filters
-- Lease modals require auth
-- User menu with logout
-
-✅ **Auth Pages**
-- Login with remember me
-- Sign up with validation
-- Password reset flow
-- Auto-login after signup
-- Smart redirects
-
----
-
-## 📂 File Structure
-
-```
-SeatSwap/
-├── index.html              ← Landing page
-├── dashboard.html          ← Dashboard (protected)
-├── js/
-│   ├── integration.js      ← Auth integration script ⭐
-│   └── auth.js             ← Auth helpers
-├── auth-app/
-│   ├── src/                ← React source files
-│   └── dist/               ← Built auth pages ⭐
-│       └── index.html      ← Entry point for auth
-└── INTEGRATION_COMPLETE.md ← Full documentation
-```
-
----
-
-## 🔄 User Flow Diagram
-
-```
-┌─────────────────────┐
-│   Landing Page      │
-│   (index.html)      │
-└──────────┬──────────┘
-           │
-    Click "Browse"
-           │
-           ▼
-    ┌──────────────┐
-    │ Authenticated?│
-    └──────┬───────┘
-           │
-    ┌──────┴──────┐
-    │             │
-   No            Yes
-    │             │
-    ▼             ▼
-┌─────────┐   ┌──────────┐
-│ Login   │   │Dashboard │
-│ Page    │   │          │
-└────┬────┘   └──────────┘
-     │
-  Submit
-     │
-     └──────────┐
-                │
-         Success login
-                │
-                ▼
-           ┌──────────┐
-           │Dashboard │
-           │+ User    │
-           │  Menu    │
-           └──────────┘
-```
-
----
-
-## 🐛 Troubleshooting
-
-### **Issue: Can't access auth pages**
 ```bash
-# Make sure auth app is built
-cd /Users/shubham/Documents/SeatSwap/auth-app
+cd auth-app
+npm install
 npm run build
 ```
 
-### **Issue: Redirects not working**
-- Check browser console for errors
-- Clear localStorage: DevTools → Application → Clear
-- Refresh the page
+The generated bundle is served from `auth-app/dist/`.
 
-### **Issue: User menu not showing**
-- Make sure you're logged in
-- Check localStorage has `seatswap_auth_token`
-- Refresh the page
+## Product boundary
 
-### **Issue: Dashboard redirects to login immediately**
-- This is correct behavior when not logged in!
-- Log in and you'll be redirected back
+Do not publish listings or accept payments based on the dashboard examples. Read the provider policy screen and Phase 0 exit gate in [BACKEND_ARCHITECTURE.md](./BACKEND_ARCHITECTURE.md) before implementing marketplace transactions.
 
----
-
-## 📊 What's Stored
-
-**localStorage:**
-```javascript
-{
-  "seatswap_auth_token": "mock_jwt_token_1234567890",
-  "seatswap_user_data": "{\"email\":\"user@example.com\",\"fullName\":\"User\",\"id\":\"user_123\"}",
-  "seatswap_currency": "USD"
-}
-```
-
-**sessionStorage:**
-```javascript
-{
-  "seatswap_redirect_after_login": "/dashboard.html"
-}
-```
-
----
-
-## 🎯 Next: Backend Integration
-
-To connect real authentication:
-
-### **1. Build Backend API**
-```javascript
-// Express.js example
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body
-  
-  // Validate credentials
-  const user = await User.findByEmail(email)
-  const valid = await bcrypt.compare(password, user.password)
-  
-  if (!valid) return res.status(401).json({ message: 'Invalid credentials' })
-  
-  // Generate JWT
-  const token = jwt.sign({ userId: user.id }, SECRET, { expiresIn: '7d' })
-  
-  res.json({ token, user: { id: user.id, email: user.email, fullName: user.fullName } })
-})
-```
-
-### **2. Update Frontend**
-Replace mock setTimeout in:
-- `auth-app/src/pages/Login.tsx` (line ~62)
-- `auth-app/src/pages/SignUp.tsx` (line ~71)
-- `auth-app/src/pages/ResetPassword.tsx` (line ~50)
-
----
-
-## 🎉 You're All Set!
-
-**Your authentication system is fully functional and ready to use!**
-
-Visit: http://localhost:8080/index.html and try the complete flow!
-
----
-
-## 📖 Full Documentation
-
-See [INTEGRATION_COMPLETE.md](./INTEGRATION_COMPLETE.md) for:
-- Complete architecture details
-- Backend integration guide
-- Security considerations
-- Advanced features
-- Production deployment
-
----
-
-**Happy testing! 🚀**
+For migration, backup, and recovery procedures, see [backend/OPERATIONS.md](./backend/OPERATIONS.md).
